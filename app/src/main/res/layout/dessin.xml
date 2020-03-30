@@ -144,11 +144,10 @@
 
     <ImageView
         android:id="@+id/cercle"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:alpha="0.2"
-        app:layout_constraintDimensionRatio="1"
-        app:layout_constraintWidth_percent="0.9"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:alpha="0.3"
+
         app:layout_constraintBottom_toBottomOf="@+id/map"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -249,7 +248,7 @@
         app:layout_constraintEnd_toStartOf="@+id/couleur"
         app:layout_constraintTop_toBottomOf="@+id/rouge"
         app:layout_constraintBottom_toTopOf="@id/proprouge"
-        android:max="100"
+        android:max="200"
         android:min="10"
         android:progress="30"/>
 

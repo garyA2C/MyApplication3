@@ -29,15 +29,20 @@ public class MyCanvas extends View {
     private Canvas moncanvas;
     private int c=0x000000;
     private int ep=30;
-    private int x,y,rayon;
+    private int x;
+    private int y;
+    private int rayon;
+    private int ratio=1;
     private ArrayList<ArrayList<Point>> listeligne = new ArrayList<>();
     private ArrayList<ArrayList<Point>> undoneligne = new ArrayList<>();
     private ArrayList<ArrayList<Integer>> ligneinfo = new ArrayList<>();
     private ArrayList<ArrayList<Integer>> undoneligneinfo = new ArrayList<>();
     private ArrayList<Point> listepoint = new ArrayList<>();
+    private MainActivity MA;
 
-    public MyCanvas(Context context) {
+    public MyCanvas(Context context, MainActivity mainact) {
         super(context);
+        MA=mainact;
         paint = new Paint();
         path = new Path();
         setupaint(paint);
@@ -49,9 +54,17 @@ public class MyCanvas extends View {
         p.setStrokeJoin(Paint.Join.ROUND);
         p.setStyle(Paint.Style.STROKE);
         p.setStrokeCap(Paint.Cap.ROUND);
-        p.setStrokeWidth(ep);
+        p.setStrokeWidth(ep/ratio);
+        System.out.println("paint setuped");
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void ratiochanged(int r){
+        ratio=r;
+        paint.setStrokeWidth(ep/ratio);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void effacertout(){
         moncanvas.drawColor(0, PorterDuff.Mode.CLEAR);
         invalidate();
@@ -64,6 +77,7 @@ public class MyCanvas extends View {
         ligneinfo.clear();
         undoneligneinfo.clear();
         listepoint.clear();
+        MA.activerzoom(true);
     }
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -73,7 +87,14 @@ public class MyCanvas extends View {
         moncanvas = new Canvas(bitmap);
         x=moncanvas.getWidth();
         y=moncanvas.getHeight();
-        rayon=(int)(Integer.min(x,y)*0.45);
+        //rayon=(int)(Integer.min(x,y)*0.45)/ratio;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            rayon=(500+MA.getPlayerLevel()*10)/ratio;
+        }
+    }
+
+    public int getRayon(){
+        return rayon;
     }
 
     @Override
@@ -93,7 +114,7 @@ public class MyCanvas extends View {
     public boolean onTouchEvent(MotionEvent event) {
         float xPos = event.getX();
         float yPos = event.getY();
-        System.out.println("x="+ xPos +" ; y="+ yPos + " color ");
+        System.out.println("x="+ xPos +" ; y="+ yPos + "ratio " + ratio);
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -106,6 +127,8 @@ public class MyCanvas extends View {
                     undonepaints.clear();
                     path.moveTo(xPos, yPos);
                     listepoint.add(new Point((int)xPos,(int)yPos));
+                    MA.activerzoom(false);
+                    MA.activerbouton(false);
                     return true;
                 }
             case MotionEvent.ACTION_MOVE:
@@ -123,14 +146,13 @@ public class MyCanvas extends View {
                 moncanvas.drawPath(path,paint);
                 paths.add(path);
                 paints.add(paint);
-                System.out.println(listepoint);
                 listeligne.add(listepoint);
                 ligneinfo.add(new ArrayList<Integer>() {{add(c) ; add(ep);}});
                 listepoint= new ArrayList<>();
-                System.out.println(listeligne);
                 path = new Path();
                 paint=new Paint();
                 setupaint(paint);
+                MA.activerbouton(true);
                 break;
             default :
                 return false;
@@ -171,11 +193,11 @@ public class MyCanvas extends View {
     }
 
     public boolean estdanslerayon(float px, float py){
-        return Math.sqrt(Math.pow(px-x/2,2)+Math.pow(py-y/2,2))<=rayon-ep/2;
+        return Math.sqrt(Math.pow(px-x/2,2)+Math.pow(py-y/2,2))<=rayon/ratio-ep/(2*ratio);
     }
 
     public double proportionrayon(float px, float py){
-        return Math.sqrt(Math.pow(px-x/2,2)+Math.pow(py-y/2,2))/(rayon-ep/2);
+        return Math.sqrt(Math.pow(px-x/2,2)+Math.pow(py-y/2,2))/(rayon/ratio-ep/(2*ratio));
     }
 
     public void couleur(int newc){
@@ -187,27 +209,25 @@ public class MyCanvas extends View {
     public void epaisseur(int newep){
         invalidate();
         ep=newep;
-        paint.setStrokeWidth(ep);
+        paint.setStrokeWidth(ep/ratio);
     }
+
     public ArrayList<ArrayList<Integer>> getInfoLigne(){
         return ligneinfo;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public ArrayList<ArrayList<IGeoPoint>> getGeoPoints(){
-        Projection proj = MainActivity.getMap().getProjection();
+        Projection proj = MA.getMap().getProjection();
         ArrayList<ArrayList<IGeoPoint>> retour = new ArrayList<>();
         for (ArrayList<Point> a : listeligne){
             ArrayList<IGeoPoint> listegeopoint = new ArrayList<>();
             for (Point p : a){
                 IGeoPoint geop=proj.fromPixels(p.x,p.y);
-                System.out.println(p);
-                System.out.println(geop);
                 listegeopoint.add(geop);
             }
             retour.add(listegeopoint);
         }
-        System.out.println(retour);
         return retour;
     }
 }

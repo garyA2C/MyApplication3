@@ -15,6 +15,7 @@ import android.graphics.PorterDuff;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -25,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.api.IMapController;
+import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
@@ -37,6 +39,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -61,25 +64,31 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
     private Context c;
     private boolean retourpossible=false;
     private MyCanvas canvas;
-    private static MapView mMapView;
+    private MapView mMapView;
+    private ImageView icercle;
     private MyLocationNewOverlay mLocationOverlay;
     private GpsMyLocationProvider mLocationProvider;
     private Socket mSocket;
-    private static double zoom=20.0;
+    private int zoom=20;
     private String playerName = "RootUser42";
+    private int playerLevel= 42;
     private IMyLocationConsumer localconsum;
+    private MainActivity ma;
     public static final String SERVER_URL = "https://paint.antoine-rcbs.ovh:443";
     private ArrayList<GeoPoint> lineLocations = new ArrayList<>();
     private ArrayList<ArrayList<IGeoPoint>> geo = new ArrayList<>();
     private boolean premium=false;
     private ArrayList<ArrayList<Integer>> info=new ArrayList<>();
-
+    private int ratio=1;
+    private int rayon = (500+playerLevel*10)/ratio;
 
     @Override
         protected void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+            Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
             setContentView(R.layout.activity_main);
             localconsum=this;
+            ma=this;
 
             //Instanciation du socket avec le serveur node.js
             try {
@@ -142,13 +151,17 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                     mLocationOverlay.enableFollowLocation();
                     mMapView.getOverlays().add(mLocationOverlay);
                     mMapView.setMaxZoomLevel(20.0);
-                    mMapView.setMinZoomLevel(2.0);
+                    mMapView.setMinZoomLevel(15.0);
 
                     //Instanciation du service de localisation
 
                     LinearLayout linear =findViewById(R.id.vMain);
-                    canvas = new MyCanvas(c);
+                    canvas = new MyCanvas(c,ma);
+
                     linear.addView(canvas);
+                    icercle=findViewById(R.id.cercle);
+                    updateRatio();
+                    System.out.println("height"+icercle.getHeight());
                     spremium=findViewById(R.id.premium);
                     spremium.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
@@ -212,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                     sepaisseur=findViewById(R.id.propepaisseur);
                     sepaisseur.getProgressDrawable().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
                     sepaisseur.getThumb().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    sepaisseur.setMax(100+playerLevel*5);
                     sepaisseur.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                         @Override
                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -232,24 +246,24 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                     bplus.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            zoom=mMapView.getZoomLevelDouble();
                             if (mMapView.canZoomIn()){
                                 zoom+=1;
+                                mapController.setZoom(zoom);
+                                updateRatio();
                             }
-                            mapController.zoomIn();
-                            tzoom.setText(Integer.toString((int)(zoom)));
+                            tzoom.setText(Integer.toString(zoom));
                         }
                     });
                     bmoins=findViewById(R.id.moins);
                     bmoins.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            zoom=mMapView.getZoomLevelDouble();
                             if (mMapView.canZoomOut()){
                                 zoom-=1;
+                                mapController.setZoom(zoom);
+                                updateRatio();
                             }
-                            mapController.zoomOut();
-                            tzoom.setText(Integer.toString((int)(zoom)));
+                            tzoom.setText(Integer.toString(zoom));
                         }
                     });
                     benvoyer=findViewById(R.id.envoyer);
@@ -435,7 +449,44 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
 
     }
 
-    public static MapView getMap(){
+    public int getPlayerLevel(){
+        return playerLevel;
+    }
+
+    public void updateRatio(){
+        int i=20-zoom;
+        ratio=(int)Math.pow(2, i);
+        icercle.getLayoutParams().height = rayon/ratio*2;
+        icercle.getLayoutParams().width = rayon/ratio*2;
+        canvas.ratiochanged(ratio);
+        System.out.println("ratio : " + ratio);
+    }
+
+    public void activerzoom(boolean bool){
+        bplus.setEnabled(bool);
+        bmoins.setEnabled(bool);
+    }
+
+    public void activerbouton(boolean bool){
+        bbleu.setEnabled(bool);
+        brouge.setEnabled(bool);
+        bvert.setEnabled(bool);
+        bcyan.setEnabled(bool);
+        bmagenta.setEnabled(bool);
+        bjaune.setEnabled(bool);
+        bnoir.setEnabled(bool);
+        bblanc.setEnabled(bool);
+        beffacertout.setEnabled(bool);
+        benvoyer.setEnabled(bool);
+        bannuler.setEnabled(bool);
+        brefaire.setEnabled(bool);
+        srouge.setEnabled(bool);
+        svert.setEnabled(bool);
+        sbleu.setEnabled(bool);
+        sepaisseur.setEnabled(bool);
+    }
+
+    public MapView getMap(){
         return mMapView;
     }
 
@@ -463,4 +514,5 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
         }
         return json;
     }
+
 }
