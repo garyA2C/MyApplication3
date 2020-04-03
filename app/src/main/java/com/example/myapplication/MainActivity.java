@@ -1,13 +1,11 @@
 package com.example.myapplication;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -49,46 +47,60 @@ import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
 import java.net.URISyntaxException;
-import java.sql.Time;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity implements IMyLocationConsumer {
-    private Button bplay, bactivate, bbleu, brouge, bplus, bmoins, bvert, bcyan, bmagenta, bjaune, bnoir, bblanc, beffacertout, benvoyer;
-    private ImageButton bannuler, brefaire;
-    private SeekBar srouge, svert, sbleu , sepaisseur;
-    private Switch spremium;
-    private TextView tcouleur, tepaisseur, tzoom;
-    private Context c;
-    private boolean retourpossible=false;
-    private MyCanvas canvas;
-    private MapView mMapView;
-    private ImageView icercle;
-    private MyLocationNewOverlay mLocationOverlay;
-    private GpsMyLocationProvider mLocationProvider;
-    private Socket mSocket;
-    private int zoom=20;
+
+    /**Elements généraux */
+    private Context context;
+    private MainActivity ma;
     private String playerName = "RootUser42";
     private int playerLevel= 42;
-    private IMyLocationConsumer localconsum;
-    private MainActivity ma;
-    public static final String SERVER_URL = "https://paint.antoine-rcbs.ovh:443";
-    private ArrayList<GeoPoint> lineLocations = new ArrayList<>();
-    private ArrayList<ArrayList<IGeoPoint>> geo = new ArrayList<>();
     private boolean premium=false;
-    private ArrayList<ArrayList<Integer>> info=new ArrayList<>();
+
+
+    /**Elements d'interface */
+    private Button bPlay, bActivate, bBlue, bRed, bPlus, bMinus, bGreen, bCyan, bMagenta, bYellow, bBlack, bWhite, bEraseAll, bSend;
+    private ImageButton bUndo, bRemake;
+    private SeekBar sRed, sGreen, sBlue, sThickness;
+    private Switch sPremium;
+    private TextView tColor, tThickness, tZoom;
+
+    /**Elements géographiques*/
+    private MapView mMapView;
+    private ImageView iCircle;
+    private MyLocationNewOverlay mLocationOverlay;
+    private GpsMyLocationProvider mLocationProvider;
+    private IMyLocationConsumer locationConsumer;
+    private int zoom=20;
+
     private int ratio=1;
     private int rayon = (500+playerLevel*10)/ratio;
+
+    private boolean backAvailable =false;
+    private MyCanvas canvas;
+
+    /** Elements du dessin */
+    private ArrayList<ArrayList<IGeoPoint>> geoDrawingLines = new ArrayList<>();
+    private ArrayList<ArrayList<Integer>> linesInfos =new ArrayList<>();
+
+    /** Elements du serveur */
+    private Socket mSocket;
+    public static final String SERVER_URL = "https://paint.antoine-rcbs.ovh:443";
+
+
 
     @Override
         protected void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
+            context = this;
+            locationConsumer = this;
+            ma = this;
+            Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context));
             setContentView(R.layout.activity_main);
-            localconsum=this;
-            ma=this;
 
             //Instanciation du socket avec le serveur node.js
             try {
@@ -98,27 +110,27 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
             }
             mSocket.connect();
 
-            getSupportActionBar().setDisplayHomeAsUpEnabled(retourpossible);
-            bplay= findViewById(R.id.bouton_play);
-            bactivate= findViewById(R.id.bouton_activate);
-            bplay.setEnabled(false);
-            c=this;
-            bactivate.setOnClickListener(new View.OnClickListener() {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(backAvailable);
+            bPlay = findViewById(R.id.bouton_play);
+            bActivate = findViewById(R.id.bouton_activate);
+            bPlay.setEnabled(false);
+            context =this;
+            bActivate.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    bplay.setEnabled(true);
+                    bPlay.setEnabled(true);
                     System.out.println("bactivate");
                 }
             });
 
-            bplay.setOnClickListener(new View.OnClickListener() {
+            bPlay.setOnClickListener(new View.OnClickListener() {
                 @SuppressLint("ClickableViewAccessibility")
                 @Override
                 public void onClick(View v) {
                     System.out.println("baplay");
                     setContentView(R.layout.dessin);
-                    retourpossible=true;
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(retourpossible);
+                    backAvailable =true;
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(backAvailable);
 
                     OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
                         @Override
@@ -142,11 +154,11 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                     mapController.setZoom(zoom);
                     GeoPoint startPoint = new GeoPoint(45.7837763, 4.872973);
                     mapController.setCenter(startPoint);
-                    mLocationProvider = new GpsMyLocationProvider(c);
-                    mLocationProvider.startLocationProvider(localconsum);
-                    mLocationProvider.setLocationUpdateMinDistance(3);
-                    mLocationProvider.setLocationUpdateMinTime(1000);
-                    mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(c), mMapView);
+                    mLocationProvider = new GpsMyLocationProvider(context);
+                    mLocationProvider.startLocationProvider(locationConsumer);
+                    mLocationProvider.setLocationUpdateMinDistance(10);
+                    mLocationProvider.setLocationUpdateMinTime(5000);
+                    mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(context), mMapView);
                     mLocationOverlay.enableMyLocation();
                     mLocationOverlay.enableFollowLocation();
                     mMapView.getOverlays().add(mLocationOverlay);
@@ -156,32 +168,32 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                     //Instanciation du service de localisation
 
                     LinearLayout linear =findViewById(R.id.vMain);
-                    canvas = new MyCanvas(c,ma);
+                    canvas = new MyCanvas(context,ma);
 
                     linear.addView(canvas);
-                    icercle=findViewById(R.id.cercle);
+                    iCircle =findViewById(R.id.cercle);
                     updateRatio();
-                    System.out.println("height"+icercle.getHeight());
-                    spremium=findViewById(R.id.premium);
-                    spremium.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    System.out.println("height"+ iCircle.getHeight());
+                    sPremium =findViewById(R.id.premium);
+                    sPremium.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                             if (isChecked){
                                 premium=true;
-                                spremium.setText("Premium");
+                                sPremium.setText("Premium");
                             }else{
                                 premium=false;
-                                spremium.setText("Regular");
+                                sPremium.setText("Regular");
                             }
                         }
                     });
-                    srouge=findViewById(R.id.proprouge);
-                    srouge.getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
-                    srouge.getThumb().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
-                    srouge.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    sRed =findViewById(R.id.proprouge);
+                    sRed.getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                    sRed.getThumb().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                    sRed.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                         @Override
                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                            changecouleur(Color.rgb(srouge.getProgress(),svert.getProgress(),sbleu.getProgress()));
+                            changecouleur(Color.rgb(sRed.getProgress(), sGreen.getProgress(), sBlue.getProgress()));
                         }
                         @Override
                         public void onStartTrackingTouch(SeekBar seekBar) {
@@ -190,13 +202,13 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                         public void onStopTrackingTouch(SeekBar seekBar) {
                         }
                     });
-                    svert=findViewById(R.id.propvert);
-                    svert.getProgressDrawable().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
-                    svert.getThumb().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
-                    svert.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    sGreen =findViewById(R.id.propvert);
+                    sGreen.getProgressDrawable().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
+                    sGreen.getThumb().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
+                    sGreen.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                         @Override
                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                            changecouleur(Color.rgb(srouge.getProgress(),svert.getProgress(),sbleu.getProgress()));
+                            changecouleur(Color.rgb(sRed.getProgress(), sGreen.getProgress(), sBlue.getProgress()));
                         }
                         @Override
                         public void onStartTrackingTouch(SeekBar seekBar) {
@@ -205,13 +217,13 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                         public void onStopTrackingTouch(SeekBar seekBar) {
                         }
                     });
-                    sbleu=findViewById(R.id.propbleu);
-                    sbleu.getProgressDrawable().setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN);
-                    sbleu.getThumb().setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN);
-                    sbleu.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    sBlue =findViewById(R.id.propbleu);
+                    sBlue.getProgressDrawable().setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN);
+                    sBlue.getThumb().setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN);
+                    sBlue.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                         @Override
                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                            changecouleur(Color.rgb(srouge.getProgress(),svert.getProgress(),sbleu.getProgress()));
+                            changecouleur(Color.rgb(sRed.getProgress(), sGreen.getProgress(), sBlue.getProgress()));
                         }
 
                         @Override
@@ -222,15 +234,15 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                         public void onStopTrackingTouch(SeekBar seekBar) {
                         }
                     });
-                    sepaisseur=findViewById(R.id.propepaisseur);
-                    sepaisseur.getProgressDrawable().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
-                    sepaisseur.getThumb().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
-                    sepaisseur.setMax(100+playerLevel*5);
-                    sepaisseur.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    sThickness =findViewById(R.id.propepaisseur);
+                    sThickness.getProgressDrawable().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    sThickness.getThumb().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    sThickness.setMax(100+playerLevel*5);
+                    sThickness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                         @Override
                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                            tepaisseur.setText(sepaisseur.getProgress() +" px");
-                            canvas.epaisseur(sepaisseur.getProgress());
+                            tThickness.setText(sThickness.getProgress() +" px");
+                            canvas.epaisseur(sThickness.getProgress());
                         }
                         @Override
                         public void onStartTrackingTouch(SeekBar seekBar) {
@@ -239,11 +251,11 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                         public void onStopTrackingTouch(SeekBar seekBar) {
                         }
                     });
-                    tzoom=findViewById(R.id.nivzoom);
-                    tcouleur=findViewById(R.id.couleur);
-                    tepaisseur=findViewById(R.id.epaisseur);
-                    bplus=findViewById(R.id.plus);
-                    bplus.setOnClickListener(new View.OnClickListener() {
+                    tZoom =findViewById(R.id.nivzoom);
+                    tColor =findViewById(R.id.couleur);
+                    tThickness =findViewById(R.id.epaisseur);
+                    bPlus =findViewById(R.id.plus);
+                    bPlus.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             if (mMapView.canZoomIn()){
@@ -251,11 +263,11 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                                 mapController.setZoom(zoom);
                                 updateRatio();
                             }
-                            tzoom.setText(Integer.toString(zoom));
+                            tZoom.setText(Integer.toString(zoom));
                         }
                     });
-                    bmoins=findViewById(R.id.moins);
-                    bmoins.setOnClickListener(new View.OnClickListener() {
+                    bMinus =findViewById(R.id.moins);
+                    bMinus.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             if (mMapView.canZoomOut()){
@@ -263,41 +275,38 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                                 mapController.setZoom(zoom);
                                 updateRatio();
                             }
-                            tzoom.setText(Integer.toString(zoom));
+                            tZoom.setText(Integer.toString(zoom));
                         }
                     });
-                    benvoyer=findViewById(R.id.envoyer);
-                    benvoyer.setOnClickListener(new View.OnClickListener() {
+                    bSend =findViewById(R.id.envoyer);
+                    bSend.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            geo=canvas.getGeoPoints();
-                            info=canvas.getInfoLigne();
-                            for (int i=0; i<geo.size();i++){
-                                mSocket.emit("new_line", lineToJSON(geo.get(i), info.get(i).get(0), info.get(i).get(1)));
-                            }
+                            MapDrawing drawing = new MapDrawing(canvas.getMapDrawingLines(), playerName, premium);
+                            mSocket.emit("new_drawing", drawing.toJSON());
                             canvas.effacertout();
                         }
                     });
-                    bannuler=findViewById(R.id.annuler);
-                    bannuler.setOnClickListener(new View.OnClickListener() {
+                    bUndo =findViewById(R.id.annuler);
+                    bUndo.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             canvas.annuler();
                         }
                     });
 
-                    brefaire=findViewById(R.id.refaire);
-                    brefaire.setOnClickListener(new View.OnClickListener() {
+                    bRemake =findViewById(R.id.refaire);
+                    bRemake.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             canvas.refaire();
                         }
                     });
-                    beffacertout=findViewById(R.id.effacertout);
-                    beffacertout.setOnClickListener(new View.OnClickListener() {
+                    bEraseAll =findViewById(R.id.effacertout);
+                    bEraseAll.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            AlertDialog.Builder newDialog = new AlertDialog.Builder(c);
+                            AlertDialog.Builder newDialog = new AlertDialog.Builder(context);
                             newDialog.setMessage("Effacer tout ?");
                             newDialog.setPositiveButton("Oui", new DialogInterface.OnClickListener(){
                                 public void onClick(DialogInterface dialog, int which){
@@ -313,57 +322,57 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                             newDialog.show();
                         }
                     });
-                    bbleu=findViewById(R.id.bleu);
-                    bbleu.setOnClickListener(new View.OnClickListener() {
+                    bBlue =findViewById(R.id.bleu);
+                    bBlue.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             boutoncouleur(Color.BLUE);
                         }
                     });
-                    brouge=findViewById(R.id.rouge);
-                    brouge.setOnClickListener(new View.OnClickListener() {
+                    bRed =findViewById(R.id.rouge);
+                    bRed.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             boutoncouleur(Color.RED);
                         }
                     });
-                    bvert=findViewById(R.id.vert);
-                    bvert.setOnClickListener(new View.OnClickListener() {
+                    bGreen =findViewById(R.id.vert);
+                    bGreen.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             boutoncouleur(Color.GREEN);
                         }
                     });
-                    bcyan=findViewById(R.id.cyan);
-                    bcyan.setOnClickListener(new View.OnClickListener() {
+                    bCyan =findViewById(R.id.cyan);
+                    bCyan.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             boutoncouleur(Color.CYAN);
                         }
                     });
-                    bmagenta=findViewById(R.id.magenta);
-                    bmagenta.setOnClickListener(new View.OnClickListener() {
+                    bMagenta =findViewById(R.id.magenta);
+                    bMagenta.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             boutoncouleur(Color.MAGENTA);
                         }
                     });
-                    bjaune=findViewById(R.id.jaune);
-                    bjaune.setOnClickListener(new View.OnClickListener() {
+                    bYellow =findViewById(R.id.jaune);
+                    bYellow.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             boutoncouleur(Color.YELLOW);
                         }
                     });
-                    bnoir=findViewById(R.id.noir);
-                    bnoir.setOnClickListener(new View.OnClickListener() {
+                    bBlack =findViewById(R.id.noir);
+                    bBlack.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             boutoncouleur(Color.BLACK);
                         }
                     });
-                    bblanc=findViewById(R.id.blanc);
-                    bblanc.setOnClickListener(new View.OnClickListener() {
+                    bWhite =findViewById(R.id.blanc);
+                    bWhite.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             boutoncouleur(Color.WHITE);
@@ -373,23 +382,23 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
             });
         }
         protected void changecouleur(int couleur){
-            tcouleur.setBackgroundColor(couleur);
-            tcouleur.setText(Integer.toHexString(couleur));
-            tcouleur.setTextColor(Color.rgb(255-Color.red(couleur),255-Color.green(couleur),255-Color.blue(couleur)));
+            tColor.setBackgroundColor(couleur);
+            tColor.setText(Integer.toHexString(couleur));
+            tColor.setTextColor(Color.rgb(255-Color.red(couleur),255-Color.green(couleur),255-Color.blue(couleur)));
             canvas.couleur(couleur);
         }
         protected void boutoncouleur(int couleur){
-            sbleu.setProgress(Color.blue(couleur));
-            svert.setProgress(Color.green(couleur));
-            srouge.setProgress(Color.red(couleur));
+            sBlue.setProgress(Color.blue(couleur));
+            sGreen.setProgress(Color.green(couleur));
+            sRed.setProgress(Color.red(couleur));
             changecouleur(couleur);
         }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        AlertDialog.Builder newquitter = new AlertDialog.Builder(c);
-        if (retourpossible){
-            AlertDialog.Builder newretour = new AlertDialog.Builder(c);
+        AlertDialog.Builder newquitter = new AlertDialog.Builder(context);
+        if (backAvailable){
+            AlertDialog.Builder newretour = new AlertDialog.Builder(context);
             newretour.setMessage("Retourner au menu principal ?");
             newretour.setPositiveButton("Oui", new DialogInterface.OnClickListener(){
                 public void onClick(DialogInterface dialog, int which){
@@ -426,7 +435,7 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
         public boolean onOptionsItemSelected(MenuItem item) {
             switch (item.getItemId()) {
                 case android.R.id.home:
-                    AlertDialog.Builder newDialog = new AlertDialog.Builder(c);
+                    AlertDialog.Builder newDialog = new AlertDialog.Builder(context);
                     newDialog.setMessage("Retourner au menu principal ?");
                     newDialog.setPositiveButton("Oui", new DialogInterface.OnClickListener(){
                         public void onClick(DialogInterface dialog, int which){
@@ -456,63 +465,41 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
     public void updateRatio(){
         int i=20-zoom;
         ratio=(int)Math.pow(2, i);
-        icercle.getLayoutParams().height = rayon/ratio*2;
-        icercle.getLayoutParams().width = rayon/ratio*2;
+        iCircle.getLayoutParams().height = rayon/ratio*2;
+        iCircle.getLayoutParams().width = rayon/ratio*2;
         canvas.ratiochanged(ratio);
         System.out.println("ratio : " + ratio);
     }
 
     public void activerzoom(boolean bool){
-        bplus.setEnabled(bool);
-        bmoins.setEnabled(bool);
+        bPlus.setEnabled(bool);
+        bMinus.setEnabled(bool);
     }
 
     public void activerbouton(boolean bool){
-        bbleu.setEnabled(bool);
-        brouge.setEnabled(bool);
-        bvert.setEnabled(bool);
-        bcyan.setEnabled(bool);
-        bmagenta.setEnabled(bool);
-        bjaune.setEnabled(bool);
-        bnoir.setEnabled(bool);
-        bblanc.setEnabled(bool);
-        beffacertout.setEnabled(bool);
-        benvoyer.setEnabled(bool);
-        bannuler.setEnabled(bool);
-        brefaire.setEnabled(bool);
-        srouge.setEnabled(bool);
-        svert.setEnabled(bool);
-        sbleu.setEnabled(bool);
-        sepaisseur.setEnabled(bool);
+        bBlue.setEnabled(bool);
+        bRed.setEnabled(bool);
+        bGreen.setEnabled(bool);
+        bCyan.setEnabled(bool);
+        bMagenta.setEnabled(bool);
+        bYellow.setEnabled(bool);
+        bBlack.setEnabled(bool);
+        bWhite.setEnabled(bool);
+        bEraseAll.setEnabled(bool);
+        bSend.setEnabled(bool);
+        bUndo.setEnabled(bool);
+        bRemake.setEnabled(bool);
+        sRed.setEnabled(bool);
+        sGreen.setEnabled(bool);
+        sBlue.setEnabled(bool);
+        sThickness.setEnabled(bool);
     }
 
     public MapView getMap(){
         return mMapView;
     }
 
-    private JSONObject lineToJSON(ArrayList<IGeoPoint> pointList, int color, int thickness) {
-        JSONObject json = new JSONObject();
-        JSONArray pointsArray = new JSONArray();
-        try {
-            json.put("player name", playerName);
-            json.put("premium", premium);
-            json.put("color", color);
-            json.put("thickness", thickness);
-            Date now = new Date();
-            DateFormat datetimeform = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-            String datetime = datetimeform.format(now);
-            json.put("datetime", datetime);
-            for (IGeoPoint geoPoint : pointList) {
-                JSONArray point = new JSONArray();
-                point.put(geoPoint.getLatitude());
-                point.put(geoPoint.getLongitude());
-                pointsArray.put(point);
-            }
-            json.put("location", pointsArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return json;
-    }
+
+
 
 }

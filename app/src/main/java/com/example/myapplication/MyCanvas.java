@@ -107,6 +107,7 @@ public class MyCanvas extends View {
         }
         canvas.drawBitmap(bitmap, 0, 0, paint);
         canvas.drawPath(path,paint);
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -147,7 +148,7 @@ public class MyCanvas extends View {
                 paths.add(path);
                 paints.add(paint);
                 listeligne.add(listepoint);
-                ligneinfo.add(new ArrayList<Integer>() {{add(c) ; add(ep);}});
+                ligneinfo.add(new ArrayList<Integer>() {{add(paint.getColor()) ; add(ep);}});
                 listepoint= new ArrayList<>();
                 path = new Path();
                 paint=new Paint();
@@ -212,12 +213,12 @@ public class MyCanvas extends View {
         paint.setStrokeWidth(ep/ratio);
     }
 
-    public ArrayList<ArrayList<Integer>> getInfoLigne(){
+    private ArrayList<ArrayList<Integer>> getInfoLigne(){
         return ligneinfo;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public ArrayList<ArrayList<IGeoPoint>> getGeoPoints(){
+    private ArrayList<ArrayList<IGeoPoint>> getGeoPoints(){
         Projection proj = MA.getMap().getProjection();
         ArrayList<ArrayList<IGeoPoint>> retour = new ArrayList<>();
         for (ArrayList<Point> a : listeligne){
@@ -229,5 +230,15 @@ public class MyCanvas extends View {
             retour.add(listegeopoint);
         }
         return retour;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public ArrayList<MapDrawingLine> getMapDrawingLines() {
+        ArrayList<MapDrawingLine> mdl = new ArrayList<>();
+        ArrayList<ArrayList<IGeoPoint>> geo = getGeoPoints();
+        for (int i = 0; i < geo.size(); i++) {
+            mdl.add(new MapDrawingLine(geo.get(i), ligneinfo.get(i).get(0), ligneinfo.get(i).get(1)));
+        }
+        return  mdl;
     }
 }
