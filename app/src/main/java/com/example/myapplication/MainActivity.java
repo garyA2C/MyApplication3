@@ -381,18 +381,19 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                 }
             });
         }
-        protected void changeColor(int col){
+
+    protected void changeColor(int col){
             tColor.setBackgroundColor(col);
             tColor.setText(Integer.toHexString(col));
             tColor.setTextColor(Color.rgb(255-Color.red(col),255-Color.green(col),255-Color.blue(col)));
             canvas.setColor(col);
-        }
-        protected void buttonColor(int col){
-            sBlue.setProgress(Color.blue(col));
-            sGreen.setProgress(Color.green(col));
-            sRed.setProgress(Color.red(col));
-            changeColor(col);
-        }
+    }
+    protected void buttonColor(int col){
+        sBlue.setProgress(Color.blue(col));
+        sGreen.setProgress(Color.green(col));
+        sRed.setProgress(Color.red(col));
+        changeColor(col);
+    }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
@@ -432,25 +433,25 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
 
 
     @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            if (item.getItemId() == android.R.id.home){
-                AlertDialog.Builder alertReturn = new AlertDialog.Builder(context);
-                alertReturn.setMessage("Retourner au menu principal ?");
-                alertReturn.setPositiveButton("Oui", new DialogInterface.OnClickListener(){
-                    public void onClick(DialogInterface dialog, int which){
-                        recreate();
-                    }
-                });
-                alertReturn.setNegativeButton("Non", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                alertReturn.show();
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home){
+            AlertDialog.Builder alertReturn = new AlertDialog.Builder(context);
+            alertReturn.setMessage("Retourner au menu principal ?");
+            alertReturn.setPositiveButton("Oui", new DialogInterface.OnClickListener(){
+                public void onClick(DialogInterface dialog, int which){
+                    recreate();
+                }
+            });
+            alertReturn.setNegativeButton("Non", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            alertReturn.show();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public void onLocationChanged(Location location, IMyLocationProvider source) {
@@ -473,6 +474,13 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
     public void ActivateZoomButton(boolean bool){
         bPlus.setEnabled(bool);
         bMinus.setEnabled(bool);
+    }
+
+    public void displayUndoRedo(boolean boolUndo, boolean boolRedo){
+        if (boolUndo) bUndo.setAlpha((float)1);
+        else bUndo.setAlpha((float)0.2);
+        if (boolRedo) bRedo.setAlpha((float)1);
+        else bRedo.setAlpha((float)0.2);
     }
 
     public void ActivateOtherButton(boolean bool){

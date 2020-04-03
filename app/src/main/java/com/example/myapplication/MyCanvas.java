@@ -73,6 +73,7 @@ public class MyCanvas extends View {
         lineInfo.clear();
         undoneLineInfo.clear();
         listPoint.clear();
+        MA.displayUndoRedo(false,false);
         MA.ActivateZoomButton(true);
     }
     @Override
@@ -140,6 +141,7 @@ public class MyCanvas extends View {
                 path = new Path();
                 paint=new Paint();
                 setupPaint(paint);
+                MA.displayUndoRedo(canUndo(),canRedo());
                 MA.ActivateOtherButton(true);
                 break;
             default :
@@ -162,6 +164,7 @@ public class MyCanvas extends View {
             invalidate();
             System.out.println("undo");
         }
+        MA.displayUndoRedo(canUndo(),canRedo());
         return canUndo();
     }
 
@@ -179,6 +182,7 @@ public class MyCanvas extends View {
             invalidate();
             System.out.println("redo");
         }
+        MA.displayUndoRedo(canUndo(),canRedo());
         return canUndo();
     }
 
