@@ -1,4 +1,19 @@
 <resources>
     <string name="app_name">Super Paint Web</string>
     <string name="play">Play</string>
+    <string name="effacer_tout">Effacer tout</string>
+    <string name="envoyer">Envoyer</string>
+    <string name="cercle">Cercle</string>
+    <string name="ff000000">ff000000</string>
+    <string name="_30_px">30 px</string>
+    <string name="plus">+</string>
+    <string name="moins">-</string>
+    <string name="_20">20</string>
+    <string name="croix">Croix</string>
+    <string name="annuler">Annuler</string>
+    <string name="refaire">Refaire</string>
+    <string name="regular">Regular</string>
+    <string name="premium">Premium</string>
+    <string name="width">%1$s px</string>
+    <string name="activate">Activate</string>
 </resources>
