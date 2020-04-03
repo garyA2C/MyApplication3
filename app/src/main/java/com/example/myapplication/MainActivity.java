@@ -8,20 +8,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.BlendMode;
+import android.graphics.BlendModeColorFilter;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -47,16 +45,16 @@ import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
 import java.net.URISyntaxException;
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Locale;
+import java.util.Objects;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity implements IMyLocationConsumer {
 
     /**Elements généraux */
     private Context context;
-    private MainActivity ma;
+    private MainActivity MA;
     private String playerName = "RootUser42";
     private int playerLevel= 42;
     private boolean premium=false;
@@ -64,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
 
     /**Elements d'interface */
     private Button bPlay, bActivate, bBlue, bRed, bPlus, bMinus, bGreen, bCyan, bMagenta, bYellow, bBlack, bWhite, bEraseAll, bSend;
-    private ImageButton bUndo, bRemake;
+    private ImageButton bUndo, bRedo;
     private SeekBar sRed, sGreen, sBlue, sThickness;
     private Switch sPremium;
     private TextView tColor, tThickness, tZoom;
@@ -78,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
     private int zoom=20;
 
     private int ratio=1;
-    private int rayon = (500+playerLevel*10)/ratio;
+    private int radius = (500+playerLevel*10)/ratio;
 
     private boolean backAvailable =false;
     private MyCanvas canvas;
@@ -98,8 +96,9 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
             super.onCreate(savedInstanceState);
             context = this;
             locationConsumer = this;
-            ma = this;
-            Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context));
+            MA = this;
+            //Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context));
+            Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
             setContentView(R.layout.activity_main);
 
             //Instanciation du socket avec le serveur node.js
@@ -109,10 +108,9 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                 e.printStackTrace();
             }
             mSocket.connect();
-
-            getSupportActionBar().setDisplayHomeAsUpEnabled(backAvailable);
-            bPlay = findViewById(R.id.bouton_play);
-            bActivate = findViewById(R.id.bouton_activate);
+            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(backAvailable);
+            bPlay = findViewById(R.id.buttonPlay);
+            bActivate = findViewById(R.id.buttonActivate);
             bPlay.setEnabled(false);
             context =this;
             bActivate.setOnClickListener(new View.OnClickListener() {
@@ -127,17 +125,17 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                 @SuppressLint("ClickableViewAccessibility")
                 @Override
                 public void onClick(View v) {
-                    System.out.println("baplay");
-                    setContentView(R.layout.dessin);
+                    System.out.println("bPlay");
+                    setContentView(R.layout.activity_drawing);
                     backAvailable =true;
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(backAvailable);
+                    Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(backAvailable);
 
-                    OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+                    /*OnBackPressedCallback callback = new OnBackPressedCallback(true // enabled by default) {
                         @Override
                         public void handleOnBackPressed() {
                             setContentView(R.layout.activity_main);
                         }
-                    };
+                    };*/
                     //requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
 
                     mMapView = findViewById(R.id.map);
@@ -151,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                     mMapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT);
                     mMapView.setMultiTouchControls(false);
                     final IMapController mapController = mMapView.getController();
-                    mapController.setZoom(zoom);
+                    mapController.setZoom((double)zoom);
                     GeoPoint startPoint = new GeoPoint(45.7837763, 4.872973);
                     mapController.setCenter(startPoint);
                     mLocationProvider = new GpsMyLocationProvider(context);
@@ -167,33 +165,31 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
 
                     //Instanciation du service de localisation
 
-                    LinearLayout linear =findViewById(R.id.vMain);
-                    canvas = new MyCanvas(context,ma);
+                    LinearLayout linear =findViewById(R.id.layoutCanvas);
+                    canvas = new MyCanvas(context, MA);
 
                     linear.addView(canvas);
-                    iCircle =findViewById(R.id.cercle);
+                    iCircle =findViewById(R.id.imageCircle);
                     updateRatio();
                     System.out.println("height"+ iCircle.getHeight());
-                    sPremium =findViewById(R.id.premium);
+                    sPremium =findViewById(R.id.switchPremium);
                     sPremium.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                             if (isChecked){
                                 premium=true;
-                                sPremium.setText("Premium");
+                                sPremium.setText(R.string.premium);
                             }else{
                                 premium=false;
-                                sPremium.setText("Regular");
+                                sPremium.setText(R.string.regular);
                             }
                         }
                     });
-                    sRed =findViewById(R.id.proprouge);
-                    sRed.getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
-                    sRed.getThumb().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                    sRed =findViewById(R.id.seekRed);
                     sRed.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                         @Override
                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                            changecouleur(Color.rgb(sRed.getProgress(), sGreen.getProgress(), sBlue.getProgress()));
+                            changeColor(Color.rgb(sRed.getProgress(), sGreen.getProgress(), sBlue.getProgress()));
                         }
                         @Override
                         public void onStartTrackingTouch(SeekBar seekBar) {
@@ -202,13 +198,11 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                         public void onStopTrackingTouch(SeekBar seekBar) {
                         }
                     });
-                    sGreen =findViewById(R.id.propvert);
-                    sGreen.getProgressDrawable().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
-                    sGreen.getThumb().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
+                    sGreen =findViewById(R.id.seekGreen);
                     sGreen.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                         @Override
                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                            changecouleur(Color.rgb(sRed.getProgress(), sGreen.getProgress(), sBlue.getProgress()));
+                            changeColor(Color.rgb(sRed.getProgress(), sGreen.getProgress(), sBlue.getProgress()));
                         }
                         @Override
                         public void onStartTrackingTouch(SeekBar seekBar) {
@@ -217,13 +211,11 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                         public void onStopTrackingTouch(SeekBar seekBar) {
                         }
                     });
-                    sBlue =findViewById(R.id.propbleu);
-                    sBlue.getProgressDrawable().setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN);
-                    sBlue.getThumb().setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN);
+                    sBlue =findViewById(R.id.seekBlue);
                     sBlue.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                         @Override
                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                            changecouleur(Color.rgb(sRed.getProgress(), sGreen.getProgress(), sBlue.getProgress()));
+                            changeColor(Color.rgb(sRed.getProgress(), sGreen.getProgress(), sBlue.getProgress()));
                         }
 
                         @Override
@@ -234,15 +226,13 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                         public void onStopTrackingTouch(SeekBar seekBar) {
                         }
                     });
-                    sThickness =findViewById(R.id.propepaisseur);
-                    sThickness.getProgressDrawable().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
-                    sThickness.getThumb().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    sThickness =findViewById(R.id.seekThickness);
                     sThickness.setMax(100+playerLevel*5);
                     sThickness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                         @Override
                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                            tThickness.setText(sThickness.getProgress() +" px");
-                            canvas.epaisseur(sThickness.getProgress());
+                            tThickness.setText(getString(R.string.width, String.format(Locale.getDefault(),"%d", sThickness.getProgress())));
+                            canvas.setThickness(sThickness.getProgress());
                         }
                         @Override
                         public void onStartTrackingTouch(SeekBar seekBar) {
@@ -251,58 +241,83 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                         public void onStopTrackingTouch(SeekBar seekBar) {
                         }
                     });
-                    tZoom =findViewById(R.id.nivzoom);
-                    tColor =findViewById(R.id.couleur);
-                    tThickness =findViewById(R.id.epaisseur);
-                    bPlus =findViewById(R.id.plus);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        sRed.getProgressDrawable().setColorFilter(new BlendModeColorFilter(Color.RED, BlendMode.SRC_ATOP));
+                        sRed.getThumb().setColorFilter(new BlendModeColorFilter(Color.RED, BlendMode.SRC_ATOP));
+                        sGreen.getProgressDrawable().setColorFilter(new BlendModeColorFilter(Color.GREEN, BlendMode.SRC_ATOP));
+                        sGreen.getThumb().setColorFilter(new BlendModeColorFilter(Color.GREEN, BlendMode.SRC_ATOP));
+                        sBlue.getProgressDrawable().setColorFilter(new BlendModeColorFilter(Color.BLUE, BlendMode.SRC_ATOP));
+                        sBlue.getThumb().setColorFilter(new BlendModeColorFilter(Color.BLUE, BlendMode.SRC_ATOP));
+                        sThickness.getProgressDrawable().setColorFilter(new BlendModeColorFilter(Color.BLACK, BlendMode.SRC_ATOP));
+                        sThickness.getThumb().setColorFilter(new BlendModeColorFilter(Color.BLACK, BlendMode.SRC_ATOP));
+                    } else {
+                        sRed.getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                        sRed.getThumb().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                        sGreen.getProgressDrawable().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
+                        sGreen.getThumb().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
+                        sBlue.getProgressDrawable().setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN);
+                        sBlue.getThumb().setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN);
+                        sThickness.getProgressDrawable().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                        sThickness.getThumb().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    }
+                    tZoom =findViewById(R.id.textZoom);
+                    tColor =findViewById(R.id.textColor);
+                    tThickness =findViewById(R.id.textThickness);
+                    bPlus =findViewById(R.id.buttonPlus);
                     bPlus.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             if (mMapView.canZoomIn()){
                                 zoom+=1;
-                                mapController.setZoom(zoom);
+                                mapController.setZoom((double)zoom);
                                 updateRatio();
+                                canvas.eraseAll();
                             }
-                            tZoom.setText(Integer.toString(zoom));
+                            tZoom.setText(String.format(Locale.getDefault(),"%d", zoom));
                         }
                     });
-                    bMinus =findViewById(R.id.moins);
+                    bMinus =findViewById(R.id.buttonMinus);
                     bMinus.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             if (mMapView.canZoomOut()){
                                 zoom-=1;
-                                mapController.setZoom(zoom);
+                                mapController.setZoom((double)zoom);
                                 updateRatio();
+                                canvas.eraseAll();
                             }
-                            tZoom.setText(Integer.toString(zoom));
+                            tZoom.setText(String.format(Locale.getDefault(),"%d", zoom));
                         }
                     });
-                    bSend =findViewById(R.id.envoyer);
+                    bSend =findViewById(R.id.buttonSend);
                     bSend.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             MapDrawing drawing = new MapDrawing(canvas.getMapDrawingLines(), playerName, premium);
                             mSocket.emit("new_drawing", drawing.toJSON());
-                            canvas.effacertout();
+                            canvas.eraseAll();
                         }
                     });
-                    bUndo =findViewById(R.id.annuler);
+                    bUndo =findViewById(R.id.buttonUndo);
                     bUndo.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            canvas.annuler();
+                            if (!canvas.undo()){
+                                ActivateZoomButton(true);
+                            }
                         }
                     });
 
-                    bRemake =findViewById(R.id.refaire);
-                    bRemake.setOnClickListener(new View.OnClickListener() {
+                    bRedo =findViewById(R.id.buttonRedo);
+                    bRedo.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            canvas.refaire();
+                            if (canvas.redo()) {
+                                ActivateZoomButton(false);
+                            }
                         }
                     });
-                    bEraseAll =findViewById(R.id.effacertout);
+                    bEraseAll =findViewById(R.id.buttonEraseAll);
                     bEraseAll.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -310,7 +325,7 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                             newDialog.setMessage("Effacer tout ?");
                             newDialog.setPositiveButton("Oui", new DialogInterface.OnClickListener(){
                                 public void onClick(DialogInterface dialog, int which){
-                                    canvas.effacertout();
+                                    canvas.eraseAll();
                                     dialog.dismiss();
                                 }
                             });
@@ -322,109 +337,109 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
                             newDialog.show();
                         }
                     });
-                    bBlue =findViewById(R.id.bleu);
+                    bBlue =findViewById(R.id.buttonBlue);
                     bBlue.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            boutoncouleur(Color.BLUE);
+                            buttonColor(Color.BLUE);
                         }
                     });
-                    bRed =findViewById(R.id.rouge);
+                    bRed =findViewById(R.id.buttonRed);
                     bRed.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            boutoncouleur(Color.RED);
+                            buttonColor(Color.RED);
                         }
                     });
-                    bGreen =findViewById(R.id.vert);
+                    bGreen =findViewById(R.id.buttonGreen);
                     bGreen.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            boutoncouleur(Color.GREEN);
+                            buttonColor(Color.GREEN);
                         }
                     });
-                    bCyan =findViewById(R.id.cyan);
+                    bCyan =findViewById(R.id.buttonCyan);
                     bCyan.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            boutoncouleur(Color.CYAN);
+                            buttonColor(Color.CYAN);
                         }
                     });
-                    bMagenta =findViewById(R.id.magenta);
+                    bMagenta =findViewById(R.id.buttonMagenta);
                     bMagenta.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            boutoncouleur(Color.MAGENTA);
+                            buttonColor(Color.MAGENTA);
                         }
                     });
-                    bYellow =findViewById(R.id.jaune);
+                    bYellow =findViewById(R.id.buttonYellow);
                     bYellow.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            boutoncouleur(Color.YELLOW);
+                            buttonColor(Color.YELLOW);
                         }
                     });
-                    bBlack =findViewById(R.id.noir);
+                    bBlack =findViewById(R.id.buttonBlack);
                     bBlack.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            boutoncouleur(Color.BLACK);
+                            buttonColor(Color.BLACK);
                         }
                     });
-                    bWhite =findViewById(R.id.blanc);
+                    bWhite =findViewById(R.id.buttonWhite);
                     bWhite.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            boutoncouleur(Color.WHITE);
+                            buttonColor(Color.WHITE);
                         }
                     });
                 }
             });
         }
-        protected void changecouleur(int couleur){
-            tColor.setBackgroundColor(couleur);
-            tColor.setText(Integer.toHexString(couleur));
-            tColor.setTextColor(Color.rgb(255-Color.red(couleur),255-Color.green(couleur),255-Color.blue(couleur)));
-            canvas.couleur(couleur);
+        protected void changeColor(int col){
+            tColor.setBackgroundColor(col);
+            tColor.setText(Integer.toHexString(col));
+            tColor.setTextColor(Color.rgb(255-Color.red(col),255-Color.green(col),255-Color.blue(col)));
+            canvas.setColor(col);
         }
-        protected void boutoncouleur(int couleur){
-            sBlue.setProgress(Color.blue(couleur));
-            sGreen.setProgress(Color.green(couleur));
-            sRed.setProgress(Color.red(couleur));
-            changecouleur(couleur);
+        protected void buttonColor(int col){
+            sBlue.setProgress(Color.blue(col));
+            sGreen.setProgress(Color.green(col));
+            sRed.setProgress(Color.red(col));
+            changeColor(col);
         }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        AlertDialog.Builder newquitter = new AlertDialog.Builder(context);
         if (backAvailable){
-            AlertDialog.Builder newretour = new AlertDialog.Builder(context);
-            newretour.setMessage("Retourner au menu principal ?");
-            newretour.setPositiveButton("Oui", new DialogInterface.OnClickListener(){
+            AlertDialog.Builder alertReturn = new AlertDialog.Builder(context);
+            alertReturn.setMessage("Retourner au menu principal ?");
+            alertReturn.setPositiveButton("Oui", new DialogInterface.OnClickListener(){
                 public void onClick(DialogInterface dialog, int which){
                     recreate();
                 }
             });
-            newretour.setNegativeButton("Non", new DialogInterface.OnClickListener() {
+            alertReturn.setNegativeButton("Non", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
                 }
             });
-            newretour.show();
+            alertReturn.show();
             return true;
         }else{
-            newquitter.setMessage("Quitter l'application?");
-            newquitter.setPositiveButton("Oui", new DialogInterface.OnClickListener(){
+            AlertDialog.Builder alertExit = new AlertDialog.Builder(context);
+            alertExit.setMessage("Quitter l'application?");
+            alertExit.setPositiveButton("Oui", new DialogInterface.OnClickListener(){
                 public void onClick(DialogInterface dialog, int which){
                     finish();
                 }
             });
-            newquitter.setNegativeButton("Non", new DialogInterface.OnClickListener() {
+            alertExit.setNegativeButton("Non", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
                 }
             });
-            newquitter.show();
+            alertExit.show();
         }
         return false;
     }
@@ -433,29 +448,27 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
 
     @Override
         public boolean onOptionsItemSelected(MenuItem item) {
-            switch (item.getItemId()) {
-                case android.R.id.home:
-                    AlertDialog.Builder newDialog = new AlertDialog.Builder(context);
-                    newDialog.setMessage("Retourner au menu principal ?");
-                    newDialog.setPositiveButton("Oui", new DialogInterface.OnClickListener(){
-                        public void onClick(DialogInterface dialog, int which){
-                            recreate();
-                        }
-                    });
-                    newDialog.setNegativeButton("Non", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-                    newDialog.show();
-                    return true;
+            if (item.getItemId() == android.R.id.home){
+                AlertDialog.Builder newDialog = new AlertDialog.Builder(context);
+                newDialog.setMessage("Retourner au menu principal ?");
+                newDialog.setPositiveButton("Oui", new DialogInterface.OnClickListener(){
+                    public void onClick(DialogInterface dialog, int which){
+                        recreate();
+                    }
+                });
+                newDialog.setNegativeButton("Non", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                newDialog.show();
+                return true;
             }
             return super.onOptionsItemSelected(item);
         }
 
     @Override
     public void onLocationChanged(Location location, IMyLocationProvider source) {
-
     }
 
     public int getPlayerLevel(){
@@ -465,18 +478,25 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
     public void updateRatio(){
         int i=20-zoom;
         ratio=(int)Math.pow(2, i);
-        iCircle.getLayoutParams().height = rayon/ratio*2;
-        iCircle.getLayoutParams().width = rayon/ratio*2;
-        canvas.ratiochanged(ratio);
+        iCircle.getLayoutParams().height = radius /ratio*2;
+        iCircle.getLayoutParams().width = radius /ratio*2;
+        canvas.ratioChange(ratio);
         System.out.println("ratio : " + ratio);
     }
 
-    public void activerzoom(boolean bool){
+    public void displayUndoRedo(boolean boolUndo, boolean boolRedo){
+        if (boolUndo) bUndo.setAlpha((float)1);
+        else bUndo.setAlpha((float)0.2);
+        if (boolRedo) bRedo.setAlpha((float)1);
+        else bRedo.setAlpha((float)0.2);
+    }
+
+    public void ActivateZoomButton(boolean bool){
         bPlus.setEnabled(bool);
         bMinus.setEnabled(bool);
     }
 
-    public void activerbouton(boolean bool){
+    public void ActivateOtherButton(boolean bool){
         bBlue.setEnabled(bool);
         bRed.setEnabled(bool);
         bGreen.setEnabled(bool);
@@ -488,7 +508,7 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
         bEraseAll.setEnabled(bool);
         bSend.setEnabled(bool);
         bUndo.setEnabled(bool);
-        bRemake.setEnabled(bool);
+        bRedo.setEnabled(bool);
         sRed.setEnabled(bool);
         sGreen.setEnabled(bool);
         sBlue.setEnabled(bool);
@@ -498,8 +518,6 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
     public MapView getMap(){
         return mMapView;
     }
-
-
 
 
 }

@@ -182,10 +182,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textWidth" />
+        app:layout_constraintTop_toBottomOf="@+id/textThickness" />
 
     <TextView
-        android:id="@+id/textWidth"
+        android:id="@+id/textThickness"
         android:layout_width="0dp"
         app:layout_constraintWidth_percent="0.20"
         android:layout_height="0dp"
@@ -206,7 +206,7 @@
         app:layout_constraintEnd_toStartOf="@+id/textColor"
         app:layout_constraintHeight_percent="0.04"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/seekWidth"
+        app:layout_constraintTop_toBottomOf="@id/seekThickness"
         app:layout_constraintWidth_percent="0.40"
         app:tickMarkTint="#FF0000"
         android:max="255"
@@ -239,7 +239,7 @@
         android:progress="0"/>
 
     <SeekBar
-        android:id="@+id/seekWidth"
+        android:id="@+id/seekThickness"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintHeight_percent="0.08"
