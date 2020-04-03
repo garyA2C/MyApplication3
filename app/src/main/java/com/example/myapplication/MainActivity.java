@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
     private Context context;
     private MainActivity MA;
     private String playerName = "RootUser42";
-    private int playerLevel= 42;
+    private int playerLevel= 420;
     private boolean premium=false;
 
 
@@ -489,6 +489,10 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
         else bUndo.setAlpha((float)0.2);
         if (boolRedo) bRedo.setAlpha((float)1);
         else bRedo.setAlpha((float)0.2);
+    }
+
+    public int getRadius(){
+        return radius;
     }
 
     public void ActivateZoomButton(boolean bool){

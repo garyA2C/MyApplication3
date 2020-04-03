@@ -84,7 +84,7 @@ public class MyCanvas extends View {
         x= myCanvas.getWidth();
         y= myCanvas.getHeight();
         //rayon=(int)(Integer.min(x,y)*0.45)/ratio;
-        radius =(500+MA.getPlayerLevel()*10)/ratio;
+        radius = MA.getRadius();
     }
 
     @Override
