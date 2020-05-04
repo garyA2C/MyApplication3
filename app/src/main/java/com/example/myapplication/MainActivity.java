@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
     private Context context;
     private MainActivity MA;
     private String playerName = "RootUser42";
-    private int playerLevel= 42;
+    private int playerLevel= 420;
     private boolean premium=false;
 
 
