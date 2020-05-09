@@ -11,8 +11,6 @@ import android.graphics.PorterDuff;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.example.myapplication.ui.login.drawingView;
-
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.views.Projection;
 

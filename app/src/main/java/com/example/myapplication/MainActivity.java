@@ -16,7 +16,7 @@ import org.osmdroid.config.Configuration;
 import org.osmdroid.views.overlay.mylocation.IMyLocationConsumer;
 import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
 import android.widget.Button;
-import com.example.myapplication.ui.login.drawingView;
+
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 

@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.login;
+package com.example.myapplication;
 
 import android.app.Activity;
 import android.content.Context;
