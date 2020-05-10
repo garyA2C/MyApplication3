@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#DDDDFF">
+
     <org.osmdroid.views.MapView
         android:id="@+id/map"
         android:layout_width="fill_parent"
@@ -287,8 +288,32 @@
         app:layout_constraintHeight_percent="0.07"
         android:background="#33000000"
         app:layout_constraintEnd_toStartOf="@id/textZoom"
+        app:layout_constraintBottom_toTopOf="@+id/viewLine" />
+
+    <Button
+        android:id="@+id/buttonHideRadius"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#33000000"
+        android:text="@string/cacher_rayon"
         app:layout_constraintBottom_toTopOf="@+id/viewLine"
-        />
+        app:layout_constraintEnd_toStartOf="@+id/buttonMinus"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/buttonMinus"
+        app:layout_constraintWidth_percent="0.20" />
+
+    <Button
+        android:id="@+id/buttonOverlayPremium"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#33000000"
+        android:text="Montrer Premium"
+        app:layout_constraintBottom_toTopOf="@+id/viewLine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/buttonPlus"
+        app:layout_constraintTop_toTopOf="@+id/buttonMinus"
+        app:layout_constraintWidth_percent="0.20" />
+
 
 
     <ImageView
@@ -333,9 +358,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="#3700B3"
-        app:layout_constraintHeight_percent="0.02"
         app:layout_constraintBottom_toTopOf="@+id/buttonRed"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.02"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/map" />
 

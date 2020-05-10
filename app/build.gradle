@@ -41,4 +41,5 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.github.nkzawa:socket.io-client:0.6.0'
     implementation 'org.osmdroid:osmdroid-android:6.1.5'
+    implementation 'org.osmdroid:osmdroid-shape:6.1.5'
 }

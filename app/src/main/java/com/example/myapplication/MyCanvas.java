@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import org.osmdroid.api.IGeoPoint;
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.Projection;
 
 import java.util.ArrayList;
@@ -215,13 +216,13 @@ public class MyCanvas extends View {
         return lineInfo;
     }*/
 
-    private ArrayList<ArrayList<IGeoPoint>> getGeoPoints(){
+    private ArrayList<ArrayList<GeoPoint>> getGeoPoints(){
         Projection pro = DV.getMap().getProjection();
-        ArrayList<ArrayList<IGeoPoint>> r = new ArrayList<>();
+        ArrayList<ArrayList<GeoPoint>> r = new ArrayList<>();
         for (ArrayList<Point> a : listLine){
-            ArrayList<IGeoPoint> listGeoPoint = new ArrayList<>();
+            ArrayList<GeoPoint> listGeoPoint = new ArrayList<>();
             for (Point p : a){
-                IGeoPoint geoP=pro.fromPixels(p.x,p.y);
+                GeoPoint geoP=(GeoPoint)pro.fromPixels(p.x,p.y);
                 listGeoPoint.add(geoP);
             }
             r.add(listGeoPoint);
@@ -231,9 +232,11 @@ public class MyCanvas extends View {
 
     public ArrayList<MapDrawingLine> getMapDrawingLines() {
         ArrayList<MapDrawingLine> mdl = new ArrayList<>();
-        ArrayList<ArrayList<IGeoPoint>> geo = getGeoPoints();
+        ArrayList<ArrayList<GeoPoint>> geo = getGeoPoints();
         for (int i = 0; i < geo.size(); i++) {
             mdl.add(new MapDrawingLine(geo.get(i), lineInfo.get(i).get(0), lineInfo.get(i).get(1)));
+            DV.addPolyline(geo.get(i), lineInfo.get(i).get(0), lineInfo.get(i).get(1), DV.getPremium());
+            System.out.println(geo.get(i));
         }
         return  mdl;
     }
