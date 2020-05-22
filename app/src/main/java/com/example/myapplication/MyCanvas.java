@@ -57,7 +57,6 @@ public class MyCanvas extends View {
         p.setStyle(Paint.Style.STROKE);
         p.setStrokeCap(Paint.Cap.ROUND);
         p.setStrokeWidth((float) thickness /ratio);
-        System.out.println("paint setup");
     }
 
     public void ratioChange(int r){
@@ -94,7 +93,6 @@ public class MyCanvas extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        System.out.println("drawing");
         for (int i=0; i<paths.size();i++){
             canvas.drawBitmap(bitmap, 0,0,paints.get(i));
             canvas.drawPath(paths.get(i), paints.get(i));
@@ -109,7 +107,6 @@ public class MyCanvas extends View {
     public boolean onTouchEvent(MotionEvent event) {
         float xPos = event.getX();
         float yPos = event.getY();
-        System.out.println("x="+ xPos +" ; y="+ yPos + "ratio " + ratio);
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -168,7 +165,6 @@ public class MyCanvas extends View {
             undoneLine.add(listLine.remove(listLine.size()-1));
             undoneLineInfo.add(lineInfo.remove(lineInfo.size()-1));
             invalidate();
-            System.out.println("undo");
         }
         DV.displayUndoRedo(canUndo(),canRedo());
         return canUndo();
@@ -186,7 +182,6 @@ public class MyCanvas extends View {
             listLine.add(undoneLine.remove(undoneLine.size()-1));
             lineInfo.add(undoneLineInfo.remove(undoneLineInfo.size()-1));
             invalidate();
-            System.out.println("redo");
         }
         DV.displayUndoRedo(canUndo(),canRedo());
         return canUndo();
@@ -236,7 +231,6 @@ public class MyCanvas extends View {
         for (int i = 0; i < geo.size(); i++) {
             mdl.add(new MapDrawingLine(geo.get(i), lineInfo.get(i).get(0), lineInfo.get(i).get(1)));
             DV.addPolyline(geo.get(i), lineInfo.get(i).get(0), lineInfo.get(i).get(1), DV.getPremium());
-            System.out.println(geo.get(i));
         }
         return  mdl;
     }

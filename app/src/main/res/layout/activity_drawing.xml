@@ -307,14 +307,26 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="#33000000"
-        android:text="Montrer Premium"
+        android:text="@string/montrer_premium"
         app:layout_constraintBottom_toTopOf="@+id/viewLine"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/buttonPlus"
         app:layout_constraintTop_toTopOf="@+id/buttonMinus"
         app:layout_constraintWidth_percent="0.20" />
 
+    <Button
+        android:id="@+id/textOverlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#00000000"
+        android:text="@string/vue_tout_les_dessins"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.65"
 
+        app:layout_constraintHeight_percent="0.05"
+        />
 
     <ImageView
         android:id="@+id/imageCross"

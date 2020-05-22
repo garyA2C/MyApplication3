@@ -31,6 +31,9 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
     private MainActivity MA;
     private drawingView DV;
 
+    private double latitude;
+    private double longitude;
+
     /**Elements d'interface */
     private Button bPlay, bActivate;
 
@@ -68,7 +71,6 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
             @Override
             public void onClick(View v) {
                 bPlay.setEnabled(true);
-                System.out.println("bactivate");
             }
         });
 
@@ -143,5 +145,7 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
     }
     @Override
     public void onLocationChanged(Location location, IMyLocationProvider source) {
+        System.out.println(location.getLatitude());
+        System.out.println(location.getLongitude());
     }
 }

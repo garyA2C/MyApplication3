@@ -38,6 +38,7 @@ import com.example.myapplication.R;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Socket;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.osmdroid.api.IGeoPoint;
@@ -79,13 +80,16 @@ public class drawingView {
     private int playerLevel= 42;
     private boolean premium=false;
 
+    private JSONObject boundsJSON= new JSONObject();
+    private JSONObject northEastJSON= new JSONObject();
+    private JSONObject southWestJSON= new JSONObject();
 
     /**Elements d'interface */
     private Button bBlue, bRed, bPlus, bMinus, bGreen, bCyan, bMagenta, bYellow, bBlack, bWhite, bEraseAll, bSend, bHideRadius, bOverlayPremium;
     private ImageButton bUndo, bRedo;
     private SeekBar sRed, sGreen, sBlue, sThickness;
     private Switch sPremium;
-    private TextView tColor, tThickness, tZoom;
+    private TextView tColor, tThickness, tZoom, tOverlay;
 
     /**Elements géographiques*/
     private MapView mMapView;
@@ -125,7 +129,6 @@ public class drawingView {
         context=cont;
         mSocket=socket;
         locationConsumer=consumer;
-        System.out.println("bPlay");
         MA.setContentView(R.layout.activity_drawing);
         MA.backAvailable(true);
         Objects.requireNonNull(MA.getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
@@ -162,9 +165,7 @@ public class drawingView {
         mMapView.getOverlays().add(mLocationOverlay);
         mMapView.setMaxZoomLevel(20.0);
         mMapView.setMinZoomLevel(15.0);
-        /*List<Overlay> folder = ShapeConverter.convert(mMapView, new File(myshape));
-        mMapView.getOverlayManager().addAll(folder);
-        mMapView.invalidate();*/
+
 
         /*ArrayList<GeoPoint> geop=new ArrayList<>();
         geop.add(new GeoPoint(45.78169048927032,4.875955581665039));
@@ -212,34 +213,6 @@ public class drawingView {
         //mMapView.getOverlayManager().add(0,mapPolylines.get(0));
         //mMapView.getOverlayManager().add(1,mapPolylines.get(1));
         //mMapView.getOverlayManager().add(0,mapPolylines.get(2));
-        //mMapView.getOverlayManager().overlaysReversed();
-        //mMapView.getOverlayManager().
-        //line.draw(mapCanvas, mMapView,false);
-
-        /*line.setOnClickListener(new Polyline.OnClickListener() {
-            @Override
-            public boolean onClick(Polyline polyline, MapView mapView, GeoPoint eventPos) {
-                Toast.makeText(mapView.getContext(), "polyline with " + polyline.getPoints().size() + "pts was tapped", Toast.LENGTH_LONG).show();
-                return false;
-            }
-        });*/
-
-        //create the first tilesOverlay
-        /*final MapTileProviderBasic tileProvider = new MapTileProviderBasic(context);
-        final TilesOverlay tilesOverlay = new TilesOverlay(tileProvider, context);
-        tilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
-
-        //create the second one
-        final MapTileProviderBasic anotherTileProvider = new MapTileProviderBasic(context);
-        final TilesOverlay secondTilesOverlay = new TilesOverlay(anotherTileProvider, context);
-        secondTilesOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
-
-        // add the first tilesOverlay to the list
-        mMapView.getOverlays().add(tilesOverlay);
-
-        // add the second tilesOverlay to the list
-        mMapView.getOverlays().add(secondTilesOverlay);*/
-
 
         onNewMessage = new Emitter.Listener() {
             @Override
@@ -248,19 +221,50 @@ public class drawingView {
                     @Override
                     public void run() {
                         JSONObject data = (JSONObject) args[0];
+                        if (data.has("new_val")){
+                            try {
+                                data = data.getJSONObject("new_val");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                System.out.println("new val samarchepa");
+                            }
+                        }
                         String player;
                         try {
-                            player = data.getString("player");
+                            JSONArray lines;
+                            lines = data.getJSONArray("lines");
+                            for (int i=0;i<lines.length(); i++){
+                                int newcol = lines.getJSONObject(i).getInt("color");
+                                int newthi = lines.getJSONObject(i).getInt("thickness");
+                                JSONArray newjsonloc = lines.getJSONObject(i).getJSONArray("location");
+                                ArrayList<GeoPoint> newloc = new ArrayList<>();
+                                for (int j=0;j<newjsonloc.length();j++){
+                                }
+                            }
                         } catch (JSONException e) {
-                            System.out.println("samarchepa");
+                            System.out.println("lines samarchepa");
                             return;
                         }
-
-                        System.out.println("heho"+player);
+                        System.out.println("heho");
                     }
                 });
             }
         };
+        try {
+            northEastJSON.put("lat",45.8437763);
+            northEastJSON.put("lng",4.912973);
+            southWestJSON.put("lat",45.7237763);
+            southWestJSON.put("lng",4.832973);
+            boundsJSON.put("_northEast",northEastJSON);
+            boundsJSON.put("_southWest",southWestJSON);
+            boundsJSON.put("zoom",20);
+            System.out.println("json ok");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            System.out.println("json pas ok");
+        }
+
+        mSocket.emit("bounds_changed", boundsJSON);
         mSocket.on("drawings_loaded", onNewMessage);
         mSocket.on("drawings_updated", onNewMessage);
         //Instanciation du service de localisation
@@ -271,7 +275,6 @@ public class drawingView {
         linear.addView(canvas);
         iCircle =MA.findViewById(R.id.imageCircle);
         updateRatio();
-        System.out.println("height"+ iCircle.getHeight());
         sPremium =MA.findViewById(R.id.switchPremium);
         sPremium.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -363,6 +366,7 @@ public class drawingView {
         tZoom =MA.findViewById(R.id.textZoom);
         tColor =MA.findViewById(R.id.textColor);
         tThickness =MA.findViewById(R.id.textThickness);
+        tOverlay=MA.findViewById(R.id.textOverlay);
         bPlus =MA.findViewById(R.id.buttonPlus);
         bPlus.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -518,6 +522,7 @@ public class drawingView {
                         }
                     }
                     bOverlayPremium.setText("Montrer Premium");
+                    tOverlay.setText("Vue : tout les dessins");
                 }else{
                     alphaRegular=0;
                     for (int j=0;j<numberMapDrawings;j++){
@@ -526,7 +531,9 @@ public class drawingView {
                         }
                     }
                     bOverlayPremium.setText("Montrer Tout");
+                    tOverlay.setText("Vue : dessins premiums");
                 }
+                mMapView.invalidate();
             }
         });
 
@@ -545,7 +552,8 @@ public class drawingView {
         for (int j=0; j<numberMapDrawings;j++){
             mapPaints.get(j).setStrokeWidth(mapStrokes.get(j)/ratio);
         }
-        System.out.println("ratio : " + ratio);
+        //System.out.println("ratio : " + ratio);
+        mMapView.invalidate();
     }
 
     public void addPolyline(ArrayList<GeoPoint> newgp, int newc, float news, boolean newp){
