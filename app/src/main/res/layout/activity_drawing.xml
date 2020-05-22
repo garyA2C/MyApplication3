@@ -336,9 +336,55 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.50"
+        app:layout_constraintWidth_percent="0.40"
         app:layout_constraintHeight_percent="0.05"/>
 
+    <TextView
+        android:id="@+id/textLitrePremium"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#00000000"
+        android:gravity="center"
+        android:text="100.00L"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/textOverlay"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.15"
+        app:layout_constraintHeight_percent="0.07"/>
+
+    <ImageView
+        android:id="@+id/imagePremium"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toStartOf="@+id/textLitrePremium"
+        app:layout_constraintHeight_percent="0.07"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/premiumpaintalpha" />
+
+    <TextView
+        android:id="@+id/textLitreRegular"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#00000000"
+        android:gravity="center"
+        android:text="100.00L"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/textOverlay"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textLitrePremium"
+        app:layout_constraintWidth_percent="0.15"
+        app:layout_constraintHeight_percent="0.07" />
+
+    <ImageView
+        android:id="@+id/imageRegular"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toStartOf="@+id/textLitreRegular"
+        app:layout_constraintHeight_percent="0.07"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imagePremium"
+        app:srcCompat="@drawable/regularpaintalpha" />
 
     <ImageView
         android:id="@+id/imageCross"

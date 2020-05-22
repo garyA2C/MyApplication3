@@ -103,7 +103,7 @@ public class drawingView {
     private int zoom=20;
 
     private int ratio=1;
-    private int radius = (500+playerLevel*10)/ratio;
+    private int radius = (500)/ratio;
 
     private MyCanvas canvas;
     private ArrayList<ArrayList<GeoPoint>> mapGeoPoints = new ArrayList<>();

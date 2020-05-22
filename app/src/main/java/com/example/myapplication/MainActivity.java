@@ -90,36 +90,19 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
     }
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (backAvailable){
-            AlertDialog.Builder alertReturn = new AlertDialog.Builder(context);
-            alertReturn.setMessage("Retourner au menu principal ?");
-            alertReturn.setPositiveButton("Oui", new DialogInterface.OnClickListener(){
-                public void onClick(DialogInterface dialog, int which){
-                    recreate();
-                }
-            });
-            alertReturn.setNegativeButton("Non", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-            alertReturn.show();
-            return true;
-        }else{
-            AlertDialog.Builder alertExit = new AlertDialog.Builder(context);
-            alertExit.setMessage("Quitter l'application?");
-            alertExit.setPositiveButton("Oui", new DialogInterface.OnClickListener(){
-                public void onClick(DialogInterface dialog, int which){
-                    finish();
-                }
-            });
-            alertExit.setNegativeButton("Non", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-            alertExit.show();
-        }
+        AlertDialog.Builder alertExit = new AlertDialog.Builder(context);
+        alertExit.setMessage("Quitter l'application?");
+        alertExit.setPositiveButton("Oui", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int which){
+                System.exit(0);
+            }
+        });
+        alertExit.setNegativeButton("Non", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        alertExit.show();
         return false;
     }
 
@@ -127,22 +110,19 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home){
-            AlertDialog.Builder newDialog = new AlertDialog.Builder(context);
-            newDialog.setMessage("Retourner au menu principal ?");
-            newDialog.setPositiveButton("Oui", new DialogInterface.OnClickListener(){
-                public void onClick(DialogInterface dialog, int which){
-                    recreate();
-                }
-            });
-            newDialog.setNegativeButton("Non", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-            newDialog.show();
-            return true;
-        }
+        AlertDialog.Builder alertExit = new AlertDialog.Builder(context);
+        alertExit.setMessage("Quitter l'application?");
+        alertExit.setPositiveButton("Oui", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int which){
+                System.exit(0);
+            }
+        });
+        alertExit.setNegativeButton("Non", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        alertExit.show();
         return super.onOptionsItemSelected(item);
     }
     public void backAvailable(boolean is){
