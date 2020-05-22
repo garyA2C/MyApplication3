@@ -15,6 +15,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.7"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" >
+
+    </org.osmdroid.views.MapView>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/map"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
@@ -314,19 +326,19 @@
         app:layout_constraintTop_toTopOf="@+id/buttonMinus"
         app:layout_constraintWidth_percent="0.20" />
 
-    <Button
+    <TextView
         android:id="@+id/textOverlay"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="#00000000"
+        android:gravity="center"
         android:text="@string/vue_tout_les_dessins"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.65"
+        app:layout_constraintWidth_percent="0.50"
+        app:layout_constraintHeight_percent="0.05"/>
 
-        app:layout_constraintHeight_percent="0.05"
-        />
 
     <ImageView
         android:id="@+id/imageCross"

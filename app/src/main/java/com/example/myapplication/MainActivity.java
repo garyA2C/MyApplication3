@@ -13,7 +13,10 @@ import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+
+import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.mylocation.IMyLocationConsumer;
 import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
 import android.widget.Button;
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
 
     private double latitude;
     private double longitude;
+    private Location loc;
 
     /**Elements d'interface */
     private Button bPlay, bActivate;
@@ -146,7 +150,23 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
     }
     @Override
     public void onLocationChanged(Location location, IMyLocationProvider source) {
-        //System.out.println(location.getLatitude());
-        //System.out.println(location.getLongitude());
+        if (loc==null) {
+            loc = location;
+            DV.locationChanged(loc);
+            System.out.println("initial location : "+location.getLatitude()+" , "+location.getLongitude());
+            DV.setProgressBarOff();
+        }else if (loc.distanceTo(location)>500){
+            loc=location;
+            DV.locationChanged(loc);
+            System.out.println("new location : "+location.getLatitude()+" , "+location.getLongitude());
+        }
+    }
+
+    public GeoPoint getLocation(){
+        if (loc==null){
+            return null;
+        }else{
+            return new GeoPoint(loc.getLatitude(), loc.getLongitude());
+        }
     }
 }

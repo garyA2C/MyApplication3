@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
+import android.location.Location;
 import android.os.Build;
 import android.text.Layout;
 import android.view.KeyEvent;
@@ -22,6 +23,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -86,6 +88,7 @@ public class drawingView {
 
     /**Elements d'interface */
     private Button bBlue, bRed, bPlus, bMinus, bGreen, bCyan, bMagenta, bYellow, bBlack, bWhite, bEraseAll, bSend, bHideRadius, bOverlayPremium;
+    private ProgressBar pBar;
     private ImageButton bUndo, bRedo;
     private SeekBar sRed, sGreen, sBlue, sThickness;
     private Switch sPremium;
@@ -153,8 +156,6 @@ public class drawingView {
         mMapView.setMultiTouchControls(false);
         final IMapController mapController = mMapView.getController();
         mapController.setZoom((double)zoom);
-        GeoPoint startPoint = new GeoPoint(45.7837763, 4.872973);
-        mapController.setCenter(startPoint);
         mLocationProvider = new GpsMyLocationProvider(context);
         mLocationProvider.startLocationProvider(locationConsumer);
         mLocationProvider.setLocationUpdateMinDistance(10);
@@ -162,9 +163,11 @@ public class drawingView {
         mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(context), mMapView);
         mLocationOverlay.enableMyLocation();
         mLocationOverlay.enableFollowLocation();
+        mapController.setCenter(MA.getLocation());
         mMapView.getOverlays().add(mLocationOverlay);
         mMapView.setMaxZoomLevel(20.0);
         mMapView.setMinZoomLevel(16.0);
+
 
 
         /*ArrayList<GeoPoint> geop=new ArrayList<>();
@@ -260,27 +263,15 @@ public class drawingView {
                 });
             }
         };
-        try {
-            northEastJSON.put("lat",45.8437763);
-            northEastJSON.put("lng",4.912973);
-            southWestJSON.put("lat",45.7237763);
-            southWestJSON.put("lng",4.832973);
-            boundsJSON.put("_northEast",northEastJSON);
-            boundsJSON.put("_southWest",southWestJSON);
-            boundsJSON.put("zoom",20);
-            System.out.println("json ok");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            System.out.println("json pas ok");
-        }
 
-        mSocket.emit("bounds_changed", boundsJSON);
         mSocket.on("drawings_loaded", onNewMessage);
         mSocket.on("drawings_updated", onNewMessage);
         //Instanciation du service de localisation
 
         LinearLayout linear =MA.findViewById(R.id.layoutCanvas);
         canvas = new MyCanvas(context, MA,this);
+
+        pBar=MA.findViewById(R.id.progressBar);
 
         linear.addView(canvas);
         iCircle =MA.findViewById(R.id.imageCircle);
@@ -654,5 +645,26 @@ public class drawingView {
         sGreen.setProgress(Color.green(col));
         sRed.setProgress(Color.red(col));
         changeColor(col);
+    }
+
+    public void locationChanged(Location location){
+        try {
+            northEastJSON.put("lat",location.getLatitude()+0.02);
+            northEastJSON.put("lng",location.getLongitude()+0.02);
+            southWestJSON.put("lat",location.getLatitude()-0.02);
+            southWestJSON.put("lng",location.getLongitude()-0.02);
+            boundsJSON.put("_northEast",northEastJSON);
+            boundsJSON.put("_southWest",southWestJSON);
+            boundsJSON.put("zoom",20);
+            System.out.println("json ok");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            System.out.println("json pas ok");
+        }
+        mSocket.emit("bounds_changed", boundsJSON);
+    }
+
+    public void setProgressBarOff(){
+        pBar.setVisibility(View.GONE);
     }
 }
