@@ -25,7 +25,7 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
-    <string name="cacher_rayon"></string>
+    <string name="cacher_rayon">Cacher rayon</string>
     <string name="vue_tout_les_dessins">Vue : tout les dessins</string>
     <string name="montrer_premium">Montrer Premium</string>
 </resources>

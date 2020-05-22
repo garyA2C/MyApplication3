@@ -5,6 +5,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.osmdroid.api.IGeoPoint;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,9 +16,17 @@ public class MapDrawing {
     private String playerName;
     private boolean premium;
     private String datetime;
+    private double usedPaint;
 
     public MapDrawing(ArrayList<MapDrawingLine> lines, String playerName, boolean premium) {
         this.lines = lines;
+        this.usedPaint=0;
+        for (MapDrawingLine l : lines){
+            usedPaint+=(l.getThickness()*l.getLineLength());
+        }
+        usedPaint/=50000;
+        usedPaint=round(usedPaint,2);
+        System.out.println(usedPaint);
         this.playerName = playerName;
         this.premium = premium;
         Date now = new Date();
@@ -56,5 +66,12 @@ public class MapDrawing {
         }
         return json;
 
+    }
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 }

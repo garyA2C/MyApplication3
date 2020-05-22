@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
     }
     @Override
     public void onLocationChanged(Location location, IMyLocationProvider source) {
-        System.out.println(location.getLatitude());
-        System.out.println(location.getLongitude());
+        //System.out.println(location.getLatitude());
+        //System.out.println(location.getLongitude());
     }
 }

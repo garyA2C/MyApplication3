@@ -12,9 +12,14 @@ public class MapDrawingLine {
     private ArrayList<GeoPoint> pointList;
     private int color;
     private int thickness;
+    private double lineLength;
 
     public MapDrawingLine(ArrayList<GeoPoint> pointList, int sRGBColor, int thickness) {
         this.pointList = pointList;
+        this.lineLength=0;
+        for (int i= 0; i<pointList.size()-1; i++){
+            this.lineLength+=pointList.get(i).distanceToAsDouble(pointList.get(i+1));
+        }
         this.color = sRGBColor & 0x00ffffff;
         this.thickness = thickness;
     }
@@ -25,6 +30,10 @@ public class MapDrawingLine {
 
     public int getColor() {
         return color;
+    }
+
+    public double getLineLength() {
+        return lineLength;
     }
 
     public int getThickness() {

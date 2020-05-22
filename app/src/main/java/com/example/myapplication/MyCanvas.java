@@ -230,7 +230,7 @@ public class MyCanvas extends View {
         ArrayList<ArrayList<GeoPoint>> geo = getGeoPoints();
         for (int i = 0; i < geo.size(); i++) {
             mdl.add(new MapDrawingLine(geo.get(i), lineInfo.get(i).get(0), lineInfo.get(i).get(1)));
-            DV.addPolyline(geo.get(i), lineInfo.get(i).get(0), lineInfo.get(i).get(1), DV.getPremium());
+            //DV.addPolyline(geo.get(i), lineInfo.get(i).get(0), lineInfo.get(i).get(1), DV.getPremium());
         }
         return  mdl;
     }

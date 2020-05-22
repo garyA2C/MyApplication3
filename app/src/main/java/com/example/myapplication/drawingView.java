@@ -164,14 +164,19 @@ public class drawingView {
         mLocationOverlay.enableFollowLocation();
         mMapView.getOverlays().add(mLocationOverlay);
         mMapView.setMaxZoomLevel(20.0);
-        mMapView.setMinZoomLevel(15.0);
+        mMapView.setMinZoomLevel(16.0);
 
 
         /*ArrayList<GeoPoint> geop=new ArrayList<>();
-        geop.add(new GeoPoint(45.78169048927032,4.875955581665039));
-        geop.add(new GeoPoint(45.78071779119017,4.877849221229553));
+        geop.add(new GeoPoint(45.7727561260112,4.87215628941745));
+        geop.add(new GeoPoint(45.786752, 4.875813));
         addPolyline(geop,Color.RED,(float)32,true);
         geop.clear();
+        geop.add(new GeoPoint(45.7726561261112,4.87205628942745));
+        geop.add(new GeoPoint(45.786652, 4.875713));
+        addPolyline(geop,Color.BLUE,(float)32,true);
+        geop.clear();
+
         geop.add(new GeoPoint(45.780588720361955,4.876188933849335));
         geop.add(new GeoPoint(45.78175782927855,4.877481758594513));
         addPolyline(geop,Color.BLUE,(float)24,true);
@@ -233,13 +238,18 @@ public class drawingView {
                         try {
                             JSONArray lines;
                             lines = data.getJSONArray("lines");
+                            boolean newpre = data.getBoolean("premium");
+                            System.out.println(newpre);
                             for (int i=0;i<lines.length(); i++){
                                 int newcol = lines.getJSONObject(i).getInt("color");
                                 int newthi = lines.getJSONObject(i).getInt("thickness");
                                 JSONArray newjsonloc = lines.getJSONObject(i).getJSONArray("location");
                                 ArrayList<GeoPoint> newloc = new ArrayList<>();
                                 for (int j=0;j<newjsonloc.length();j++){
+                                    GeoPoint newGP = new GeoPoint(newjsonloc.getJSONArray(j).getDouble(0),newjsonloc.getJSONArray(j).getDouble(1));
+                                    newloc.add(newGP);
                                 }
+                                addPolyline(newloc,newcol,newthi,newpre);
                             }
                         } catch (JSONException e) {
                             System.out.println("lines samarchepa");
@@ -330,7 +340,7 @@ public class drawingView {
             }
         });
         sThickness =MA.findViewById(R.id.seekThickness);
-        sThickness.setMax(100+playerLevel*5);
+        sThickness.setMax(250);
         sThickness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -570,20 +580,24 @@ public class drawingView {
         mapStrokes.add(news);
         mapPaints.get(numberMapDrawings).setStrokeWidth(mapStrokes.get(numberMapDrawings)/ratio);
         mapPremiums.add(newp);
+        System.out.print("printons");
         if (newp){
             //mMapView.getOverlayManager().removeAll(overlayPremium);
             overlayPremium.add(mapPolylines.get(numberMapDrawings));
+            mapPaints.get(numberMapDrawings).setAlpha(255);
             mMapView.getOverlayManager().add(numberMapDrawings,mapPolylines.get(numberMapDrawings));
+            System.out.println(" un premium");
             nbPremium+=1;
         }else{
             //mMapView.getOverlayManager().removeAll(overlayRegular);
             overlayRegular.add(mapPolylines.get(numberMapDrawings));
             mapPaints.get(numberMapDrawings).setAlpha(alphaRegular);
             mMapView.getOverlayManager().add(nbRegular,mapPolylines.get(numberMapDrawings));
+            System.out.println(" un regular");
             nbRegular+=1;
         }
-        mMapView.invalidate();
         numberMapDrawings+=1;
+        mMapView.invalidate();
     }
 
     public void displayUndoRedo(boolean boolUndo, boolean boolRedo){
