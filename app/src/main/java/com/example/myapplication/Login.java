@@ -67,7 +67,7 @@ public class Login extends AppCompatActivity {
                 System.out.println(password);
 
 
-                String strResult= HttpUtils.submitPostData(baseURL,params, "utf-8");
+                //String strResult= HttpUtils.submitPostData(baseURL,params, "utf-8");
                 System.out.println(username);
 
                 if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
