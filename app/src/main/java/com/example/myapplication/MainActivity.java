@@ -3,13 +3,19 @@ package com.example.myapplication;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.multidex.BuildConfig;
+import com.example.myapplication.Inscription;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,11 +26,19 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.mylocation.IMyLocationConsumer;
 import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
@@ -38,9 +52,11 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
     private double latitude;
     private double longitude;
     private Location loc;
+    private static String baseURL = "https://paint.antoine-rcbs.ovh/login";
+    private File file;
+
 
     /**Elements d'interface */
-    private Button bPlay, bActivate;
 
     /**Elements géographiques*/
     private IMyLocationConsumer locationConsumer;
@@ -60,7 +76,10 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
         MA = this;
         Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context));
         Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
-        setContentView(R.layout.activity_main);
+//        setContentView(R.layout.activity_drawing);
+
+
+
 
         //Instanciation du socket avec le serveur node.js
         try {
@@ -69,23 +88,23 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
             e.printStackTrace();
         }
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(backAvailable);
-        bPlay = findViewById(R.id.buttonPlay);
-        bActivate = findViewById(R.id.buttonActivate);
-        bPlay.setEnabled(false);
-        bActivate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bPlay.setEnabled(true);
-            }
-        });
-
-        bPlay.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("ClickableViewAccessibility")
-            @Override
-            public void onClick(View v) {
-                DV = new drawingView(MA,context,mSocket,locationConsumer);
-            }
-        });
+//        bPlay = findViewById(R.id.buttonPlay);
+//        bActivate = findViewById(R.id.buttonActivate);
+//        bPlay.setEnabled(false);
+//        bActivate.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                bPlay.setEnabled(true);
+//            }
+//        });
+//
+//        bPlay.setOnClickListener(new View.OnClickListener() {
+//            @SuppressLint("ClickableViewAccessibility")
+//            @Override
+//            public void onClick(View v) {
+        DV = new drawingView(MA,context,mSocket,locationConsumer);
+//            }
+//        });
         mSocket.connect();
     }
     @Override
@@ -149,4 +168,5 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
             return new GeoPoint(loc.getLatitude(), loc.getLongitude());
         }
     }
+
 }
