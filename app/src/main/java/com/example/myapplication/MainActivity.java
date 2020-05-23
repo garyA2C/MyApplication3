@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         AlertDialog.Builder alertExit = new AlertDialog.Builder(context);
-        alertExit.setMessage("Quitter l'application?");
+        alertExit.setMessage("Se déconnecter?");
         alertExit.setPositiveButton("Oui", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int which){
                 System.exit(0);
@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         AlertDialog.Builder alertExit = new AlertDialog.Builder(context);
-        alertExit.setMessage("Quitter l'application?");
+        alertExit.setMessage("Se déconnecter?");
         alertExit.setPositiveButton("Oui", new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int which){
                 System.exit(0);
