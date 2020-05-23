@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -30,7 +31,9 @@ public class Login extends AppCompatActivity {
     private EditText Username;
     private EditText Password;
     private CheckBox Rembme;
-    File ext = Environment.getExternalStorageDirectory();
+    private Context context;
+
+    File ext;
     private static String baseURL = "https://paint.antoine-rcbs.ovh/login";
     private File file;
 
@@ -39,7 +42,7 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        context=this;
         Button_confirmer = (Button) findViewById(R.id.confirmer);
         Button_inscription = (Button) findViewById(R.id.inscription);
         Username = findViewById(R.id.email);
@@ -71,14 +74,15 @@ public class Login extends AppCompatActivity {
                 System.out.println(username);
 
                 if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
-                    Toast.makeText(Login.this, "Mot de passe ou email est vide", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Login.this, "Mot de passe ou email vide", Toast.LENGTH_SHORT).show();
                     //return;
                 } else if (!Rembme.isChecked()) {
+                    ext= context.getExternalFilesDir(null);
                     file = new File(ext, "user.txt");
                 }
 
                  if(!isPassword(Password.getText().toString())){
-                    Toast.makeText(Login.this, "Votre password < 5 bytes",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Login.this, "Votre password ne fait pas 5 caractères",Toast.LENGTH_SHORT).show();
                 }else {
                      Intent intent = new Intent();
                      intent.setClass(Login.this, MainActivity.class);
