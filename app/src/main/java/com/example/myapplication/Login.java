@@ -76,8 +76,7 @@ public class Login extends AppCompatActivity {
                 } else if (!Rembme.isChecked()) {
                     file = new File(ext, "user.txt");
                 }
-//                if(!isEmail(Email.getText().toString())) {
-//                    Toast.makeText(Login.this, "Votre email est non correct.", Toast.LENGTH_SHORT).show();
+
                  if(!isPassword(Password.getText().toString())){
                     Toast.makeText(Login.this, "Votre password < 5 bytes",Toast.LENGTH_SHORT).show();
                 }else {
