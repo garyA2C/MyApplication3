@@ -104,6 +104,7 @@ public class drawingView {
 
     private int ratio=1;
     private int radius = (500)/ratio;
+    private double premiumVolume=0.0, regularVolume=1.0, volume=0.0;
 
     private MyCanvas canvas;
     private ArrayList<ArrayList<GeoPoint>> mapGeoPoints = new ArrayList<>();
@@ -117,6 +118,8 @@ public class drawingView {
     private int nbRegular=0;
     private int nbPremium=0;
     private int alphaRegular=255;
+    private MapDrawing drawing;
+    private String string ="";
 
     /** Elements du dessin */
     private ArrayList<ArrayList<IGeoPoint>> geoDrawingLines = new ArrayList<>();
@@ -398,9 +401,46 @@ public class drawingView {
         bSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MapDrawing drawing = new MapDrawing(canvas.getMapDrawingLines(), playerName, premium);
-                mSocket.emit("new_drawing", drawing.toJSON());
-                canvas.eraseAll();
+                drawing = new MapDrawing(canvas.getMapDrawingLines(), playerName, premium);
+                if (premium){
+                    volume=premiumVolume;
+                    string="premium";
+                }else{
+                    volume=regularVolume;
+                    string="regular";
+                }
+                if (drawing.getUsedPaint() > volume) {
+                    AlertDialog.Builder newDialog = new AlertDialog.Builder(context);
+                    newDialog.setMessage("Vous ne pouvez pas envoyer ce trait car ne possédez pas assez de peinture. Effacer ?");
+                    newDialog.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            canvas.eraseAll();
+                            dialog.dismiss();
+                        }
+                    });
+                    newDialog.setNegativeButton("Non", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    newDialog.show();
+                } else {
+                    AlertDialog.Builder newDialog = new AlertDialog.Builder(context);
+                    newDialog.setMessage("Envoyer ce dessin ? Il vous coutera " + drawing.getUsedPaint() + "L de peinture " + string);
+                    newDialog.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            mSocket.emit("new_drawing", drawing.toJSON());
+                            canvas.eraseAll();
+                            dialog.dismiss();
+                        }
+                    });
+                    newDialog.setNegativeButton("Non", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    newDialog.show();
+                }
             }
         });
         bUndo =MA.findViewById(R.id.buttonUndo);

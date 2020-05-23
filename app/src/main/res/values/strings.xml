@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Super Paint Web</string>
+    <string name="app_name">Paint The World</string>
     <string name="play">Play</string>
-    <string name="effacer_tout">Effacer tout</string>
+    <string name="effacer_tout">Effacer</string>
     <string name="envoyer">Envoyer</string>
     <string name="cercle">Cercle</string>
     <string name="ff000000">ff000000</string>
@@ -28,4 +28,7 @@
     <string name="cacher_rayon">Cacher rayon</string>
     <string name="vue_tout_les_dessins">Vue : tout les dessins</string>
     <string name="montrer_premium">Montrer Premium</string>
+    <string name="_100_00l">100.00L</string>
+    <string name="imagepremium">imagePremium</string>
+    <string name="imageregular">imageRegular</string>
 </resources>

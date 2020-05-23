@@ -50,6 +50,10 @@ public class MapDrawing {
         return datetime;
     }
 
+    public double getUsedPaint() {
+        return usedPaint;
+    }
+
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
         JSONArray linesArray = new JSONArray();
