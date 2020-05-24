@@ -1,6 +1,5 @@
-package fr.insalyon.painttheworldapp;
+package com.example.myapplication;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,22 +14,14 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import fr.insalyon.painttheworldapp.util.HttpUtils;
-import fr.insalyon.painttheworldapp.util.PermissionUtils;
+
 
 public class Login extends AppCompatActivity {
 
@@ -73,22 +64,26 @@ public class Login extends AppCompatActivity {
 
                 params.put("username", username);
                 params.put("password", password);
+                System.out.println(password);
+
 
                 //String strResult= HttpUtils.submitPostData(baseURL,params, "utf-8");
+                System.out.println(username);
+
                 if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
                     Toast.makeText(Login.this, "Mot de passe ou email est vide", Toast.LENGTH_SHORT).show();
                     //return;
                 } else if (!Rembme.isChecked()) {
                     file = new File(ext, "user.txt");
                 }
-//                if(!isEmail(Email.getText().toString())) {
-//                    Toast.makeText(Login.this, "Votre email est non correct.", Toast.LENGTH_SHORT).show();
+
                  if(!isPassword(Password.getText().toString())){
                     Toast.makeText(Login.this, "Votre password < 5 bytes",Toast.LENGTH_SHORT).show();
                 }else {
-                    Intent intent = new Intent();
-                    intent.setClass(Login.this, map.class);
-                    startActivity(intent);
+                     Intent intent = new Intent();
+                     intent.setClass(Login.this, MainActivity.class);
+
+                     startActivity(intent);
                 }
             }
         });
@@ -123,7 +118,6 @@ public class Login extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
 
 
     public boolean isPassword(String password){
