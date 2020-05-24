@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#DDDDFF">
+
+    <org.osmdroid.views.MapView
+        android:id="@+id/map"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:alpha="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.7"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" >
+
+    </org.osmdroid.views.MapView>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/map"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageCircle"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:alpha="0.3"
+        app:layout_constraintBottom_toBottomOf="@+id/map"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/circle"
+        android:contentDescription="@string/cercle" />
+
+    <View
+        android:id="@+id/viewText"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#D0D0FF"
+        app:layout_constraintWidth_percent="0.23"
+        app:layout_constraintHeight_percent="0.18"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonYellow"
+        />
+
+    <Button
+        android:id="@+id/buttonRed"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.125"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.07"
+        android:background="#ff0000"
+        app:layout_constraintEnd_toStartOf="@id/buttonGreen"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewLine" />
+
+    <Button
+        android:id="@+id/buttonGreen"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.125"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.07"
+        android:background="#00ff00"
+        app:layout_constraintEnd_toStartOf="@id/buttonBlue"
+        app:layout_constraintStart_toEndOf="@+id/buttonRed"
+        app:layout_constraintTop_toBottomOf="@+id/viewLine" />
+
+    <Button
+        android:id="@+id/buttonBlue"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.125"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.07"
+        android:background="#0000ff"
+        app:layout_constraintEnd_toStartOf="@id/buttonYellow"
+        app:layout_constraintStart_toEndOf="@+id/buttonGreen"
+        app:layout_constraintTop_toBottomOf="@+id/viewLine" />
+
+    <Button
+        android:id="@+id/buttonYellow"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.125"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.07"
+        android:background="#ffff00"
+        app:layout_constraintEnd_toStartOf="@id/buttonMagenta"
+        app:layout_constraintStart_toEndOf="@+id/buttonBlue"
+        app:layout_constraintTop_toBottomOf="@+id/viewLine" />
+
+    <Button
+        android:id="@+id/buttonMagenta"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.125"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.07"
+        android:background="#ff00ff"
+        app:layout_constraintEnd_toStartOf="@id/buttonCyan"
+        app:layout_constraintStart_toEndOf="@+id/buttonYellow"
+        app:layout_constraintTop_toBottomOf="@+id/viewLine" />
+
+    <Button
+        android:id="@+id/buttonCyan"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.125"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.07"
+        android:background="#00ffff"
+        app:layout_constraintEnd_toStartOf="@id/buttonBlack"
+        app:layout_constraintStart_toEndOf="@+id/buttonMagenta"
+        app:layout_constraintTop_toBottomOf="@+id/viewLine" />
+
+    <Button
+        android:id="@+id/buttonBlack"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.125"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.07"
+        android:background="#000000"
+        app:layout_constraintEnd_toStartOf="@id/buttonWhite"
+        app:layout_constraintStart_toEndOf="@+id/buttonCyan"
+        app:layout_constraintTop_toBottomOf="@+id/viewLine" />
+
+    <Button
+        android:id="@+id/buttonWhite"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.125"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.07"
+        android:background="#ffffff"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/buttonBlack"
+        app:layout_constraintTop_toBottomOf="@+id/viewLine" />
+
+    <Button
+        android:id="@+id/buttonEraseAll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/effacer_tout"
+        app:layout_constraintBottom_toTopOf="@id/buttonSend"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.07"
+        app:layout_constraintStart_toEndOf="@+id/viewText"
+        app:layout_constraintTop_toBottomOf="@+id/switchPremium"
+        app:layout_constraintWidth_percent="0.32" />
+
+    <Button
+        android:id="@+id/buttonSend"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/envoyer"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.07"
+        app:layout_constraintStart_toEndOf="@+id/viewText"
+        app:layout_constraintTop_toBottomOf="@+id/buttonEraseAll"
+        app:layout_constraintWidth_percent="0.32" />
+
+
+
+    <LinearLayout
+        android:id="@+id/layoutCanvas"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:alpha="0.75"
+        android:background="#33222266"
+        app:layout_constraintHeight_percent="0.7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textColor"
+        android:layout_width="0dp"
+        android:textColor="#FFFFFF"
+        android:background="#000000"
+        app:layout_constraintWidth_percent="0.20"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.07"
+        android:gravity="center"
+        android:text="@string/ff000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textThickness" />
+
+    <TextView
+        android:id="@+id/textThickness"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.20"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.07"
+        android:textColor="#000000"
+        android:text="@string/_30_px"
+        app:layout_constraintBottom_toTopOf="@id/textColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonWhite"
+        android:gravity="center"/>
+
+    <SeekBar
+        android:id="@+id/seekRed"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/seekGreen"
+        app:layout_constraintEnd_toStartOf="@+id/textColor"
+        app:layout_constraintHeight_percent="0.04"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/seekThickness"
+        app:layout_constraintWidth_percent="0.40"
+        app:tickMarkTint="#FF0000"
+        android:max="255"
+        android:progress="0"/>
+
+    <SeekBar
+        android:id="@+id/seekGreen"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/seekBlue"
+        app:layout_constraintTop_toBottomOf="@id/seekRed"
+        app:layout_constraintEnd_toStartOf="@+id/textColor"
+        app:layout_constraintHeight_percent="0.04"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.40"
+        android:max="255"
+        android:progress="0"/>
+
+    <SeekBar
+        android:id="@+id/seekBlue"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/textColor"
+        app:layout_constraintHeight_percent="0.04"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/seekGreen"
+        app:layout_constraintWidth_percent="0.40"
+        android:max="255"
+        android:progress="0"/>
+
+    <SeekBar
+        android:id="@+id/seekThickness"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.08"
+        app:layout_constraintWidth_percent="0.40"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/textColor"
+        app:layout_constraintTop_toBottomOf="@+id/buttonRed"
+        app:layout_constraintBottom_toTopOf="@id/seekRed"
+        android:max="200"
+        android:min="5"
+        android:progress="30"
+        tools:targetApi="o" />
+
+    <TextView
+        android:id="@+id/textZoom"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.125"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.07"
+        android:background="#66FFFFFF"
+        android:gravity="center"
+        android:text="@string/_20"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toTopOf="@id/viewLine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <Button
+        android:id="@+id/buttonPlus"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.125"
+        android:layout_height="0dp"
+        android:text="@string/plus"
+        app:layout_constraintHeight_percent="0.07"
+        android:background="#66FFFFFF"
+        app:layout_constraintStart_toEndOf="@+id/textZoom"
+        app:layout_constraintBottom_toTopOf="@+id/viewLine" />
+
+    <Button
+        android:id="@+id/buttonMinus"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.125"
+        android:layout_height="0dp"
+        android:text="@string/moins"
+        app:layout_constraintHeight_percent="0.07"
+        android:background="#66FFFFFF"
+        app:layout_constraintEnd_toStartOf="@id/textZoom"
+        app:layout_constraintBottom_toTopOf="@+id/viewLine" />
+
+    <Button
+        android:id="@+id/buttonHideRadius"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#66FFFFFF"
+        android:text="cacher_rayon"
+        app:layout_constraintBottom_toTopOf="@+id/viewLine"
+        app:layout_constraintEnd_toStartOf="@+id/buttonMinus"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/buttonMinus"
+        app:layout_constraintWidth_percent="0.20" />
+
+    <Button
+        android:id="@+id/buttonOverlayPremium"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#66FFFFFF"
+        android:text="montrer_premium"
+        app:layout_constraintBottom_toTopOf="@+id/viewLine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/buttonPlus"
+        app:layout_constraintTop_toTopOf="@+id/buttonMinus"
+        app:layout_constraintWidth_percent="0.20" />
+
+    <TextView
+        android:id="@+id/textOverlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#66FFFFFF"
+        android:gravity="center"
+        android:text="vue_tout_les_dessins"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.40"
+        app:layout_constraintHeight_percent="0.05"/>
+
+    <TextView
+        android:id="@+id/textLitrePremium"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:text="_100_00l"
+        android:background="#66FFFFFF"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.15"
+        app:layout_constraintHeight_percent="0.07"/>
+
+    <ImageView
+        android:id="@+id/imagePremium"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="13dp"
+        app:layout_constraintEnd_toEndOf="@+id/buttonHideRadius"
+        app:layout_constraintHeight_percent="0.055"
+        app:layout_constraintStart_toEndOf="@+id/textLitrePremium"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/premiumpaintalpha"
+        android:contentDescription="imagepremium" />
+
+    <TextView
+        android:id="@+id/textLitreRegular"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#66FFFFFF"
+        android:gravity="center"
+        android:text="_100_00l"
+        android:textStyle="bold"
+        app:layout_constraintHeight_percent="0.07"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textLitrePremium"
+        app:layout_constraintWidth_percent="0.15" />
+
+    <ImageView
+        android:id="@+id/imageRegular"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="@+id/imagePremium"
+        app:layout_constraintHeight_percent="0.055"
+        app:layout_constraintStart_toEndOf="@+id/textLitreRegular"
+        app:layout_constraintTop_toBottomOf="@+id/textLitrePremium"
+        app:srcCompat="@drawable/regularpaintalpha"
+        android:contentDescription="imageregular" />
+
+    <ImageView
+        android:id="@+id/imageCross"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.10"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.10"
+        app:layout_constraintBottom_toBottomOf="@+id/map"
+        app:layout_constraintEnd_toEndOf="@+id/map"
+        app:layout_constraintStart_toStartOf="@+id/map"
+        app:layout_constraintTop_toTopOf="@+id/map"
+        app:srcCompat="@drawable/cross"
+        android:contentDescription="@string/croix" />
+
+    <ImageButton
+        android:id="@+id/buttonUndo"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:alpha="0.2"
+        android:background="@drawable/undo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.07"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.15"
+        android:contentDescription="@string/annuler" />
+
+    <ImageButton
+        android:id="@+id/buttonRedo"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:alpha="0.2"
+        android:background="@drawable/redo"
+        app:layout_constraintTop_toBottomOf="@+id/buttonUndo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.07"
+        app:layout_constraintWidth_percent="0.15"
+        android:contentDescription="@string/refaire" />
+
+    <View
+        android:id="@+id/viewLine"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="#3700B3"
+        app:layout_constraintBottom_toTopOf="@+id/buttonRed"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.02"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/map" />
+
+    <Switch
+        android:id="@+id/switchPremium"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.32"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.06"
+        android:text="@string/regular"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@+id/buttonEraseAll"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/viewText"
+        app:layout_constraintTop_toBottomOf="@+id/buttonBlack" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
