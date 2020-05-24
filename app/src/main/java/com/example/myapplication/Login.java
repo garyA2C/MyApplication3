@@ -32,7 +32,6 @@ public class Login extends AppCompatActivity {
     private CheckBox Rembme;
     File ext = Environment.getExternalStorageDirectory();
     private static String baseURL = "https://paint.antoine-rcbs.ovh/login";
-    private File file;
 
 
     @Override
@@ -58,17 +57,26 @@ public class Login extends AppCompatActivity {
         Button_confirmer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String token;
                 String username = Username.getText().toString().trim();
                 String password = Password.getText().toString().trim();
                 Map<String, String> params =  new HashMap<String, String>();
 
-                params.put("username", username);
-                params.put("password", password);
-                System.out.println(password);
+                File file = new File(ext,"TOKEN.txt");
+                if(!file.exists()){
+                    return;
+                }
+                try{
+                    FileReader reader = new FileReader(file);
+                    BufferedReader br = new BufferedReader(reader);
+                    token = br.readLine();
+                    br.close();
+                    params.put("token", token);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                String strResult= HttpUtils.submitPostData(baseURL,params, "utf-8");
 
-
-                //String strResult= HttpUtils.submitPostData(baseURL,params, "utf-8");
-                System.out.println(username);
 
                 if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
                     Toast.makeText(Login.this, "Mot de passe ou email est vide", Toast.LENGTH_SHORT).show();
