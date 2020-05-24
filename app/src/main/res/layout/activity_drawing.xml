@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#DDDDFF">
-
     <org.osmdroid.views.MapView
         android:id="@+id/map"
         android:layout_width="fill_parent"
@@ -14,18 +13,6 @@
         android:alpha="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.7"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
-
-    </org.osmdroid.views.MapView>
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/map"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -272,7 +259,7 @@
         app:layout_constraintWidth_percent="0.125"
         android:layout_height="0dp"
         app:layout_constraintHeight_percent="0.07"
-        android:background="#66FFFFFF"
+        android:background="#33000000"
         android:gravity="center"
         android:text="@string/_20"
         android:textColor="#000000"
@@ -287,7 +274,7 @@
         android:layout_height="0dp"
         android:text="@string/plus"
         app:layout_constraintHeight_percent="0.07"
-        android:background="#66FFFFFF"
+        android:background="#33000000"
         app:layout_constraintStart_toEndOf="@+id/textZoom"
         app:layout_constraintBottom_toTopOf="@+id/viewLine" />
 
@@ -298,95 +285,11 @@
         android:layout_height="0dp"
         android:text="@string/moins"
         app:layout_constraintHeight_percent="0.07"
-        android:background="#66FFFFFF"
+        android:background="#33000000"
         app:layout_constraintEnd_toStartOf="@id/textZoom"
-        app:layout_constraintBottom_toTopOf="@+id/viewLine" />
-
-    <Button
-        android:id="@+id/buttonHideRadius"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="#66FFFFFF"
-        android:text="@string/cacher_rayon"
         app:layout_constraintBottom_toTopOf="@+id/viewLine"
-        app:layout_constraintEnd_toStartOf="@+id/buttonMinus"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/buttonMinus"
-        app:layout_constraintWidth_percent="0.20" />
+        />
 
-    <Button
-        android:id="@+id/buttonOverlayPremium"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="#66FFFFFF"
-        android:text="@string/montrer_premium"
-        app:layout_constraintBottom_toTopOf="@+id/viewLine"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/buttonPlus"
-        app:layout_constraintTop_toTopOf="@+id/buttonMinus"
-        app:layout_constraintWidth_percent="0.20" />
-
-    <TextView
-        android:id="@+id/textOverlay"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="#66FFFFFF"
-        android:gravity="center"
-        android:text="@string/vue_tout_les_dessins"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.40"
-        app:layout_constraintHeight_percent="0.05"/>
-
-    <TextView
-        android:id="@+id/textLitrePremium"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:gravity="center"
-        android:text="@string/_100_00l"
-        android:background="#66FFFFFF"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.15"
-        app:layout_constraintHeight_percent="0.07"/>
-
-    <ImageView
-        android:id="@+id/imagePremium"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="13dp"
-        app:layout_constraintEnd_toEndOf="@+id/buttonHideRadius"
-        app:layout_constraintHeight_percent="0.055"
-        app:layout_constraintStart_toEndOf="@+id/textLitrePremium"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/premiumpaintalpha"
-        android:contentDescription="@string/imagepremium" />
-
-    <TextView
-        android:id="@+id/textLitreRegular"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="#66FFFFFF"
-        android:gravity="center"
-        android:text="@string/_100_00l"
-        android:textStyle="bold"
-        app:layout_constraintHeight_percent="0.07"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textLitrePremium"
-        app:layout_constraintWidth_percent="0.15" />
-
-    <ImageView
-        android:id="@+id/imageRegular"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintEnd_toEndOf="@+id/imagePremium"
-        app:layout_constraintHeight_percent="0.055"
-        app:layout_constraintStart_toEndOf="@+id/textLitreRegular"
-        app:layout_constraintTop_toBottomOf="@+id/textLitrePremium"
-        app:srcCompat="@drawable/regularpaintalpha"
-        android:contentDescription="@string/imageregular" />
 
     <ImageView
         android:id="@+id/imageCross"
@@ -430,9 +333,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="#3700B3"
+        app:layout_constraintHeight_percent="0.02"
         app:layout_constraintBottom_toTopOf="@+id/buttonRed"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.02"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/map" />
 
