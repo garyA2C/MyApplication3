@@ -4,7 +4,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.multidex.BuildConfig;
-<<<<<<< HEAD
 import android.content.Context;
 import android.content.DialogInterface;
 import android.location.Location;
@@ -14,52 +13,17 @@ import androidx.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 
-=======
-import com.example.myapplication.Inscription;
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.location.Location;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.StrictMode;
-import android.preference.PreferenceManager;
-import android.text.TextUtils;
-import android.view.KeyEvent;
-import android.view.MenuItem;
-import android.view.View;
-
-import org.osmdroid.api.IGeoPoint;
->>>>>>> parent of bb12218... Fuision
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.mylocation.IMyLocationConsumer;
 import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
-<<<<<<< HEAD
-=======
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.Toast;
->>>>>>> parent of bb12218... Fuision
 
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
-<<<<<<< HEAD
 import java.io.File;
 import java.net.URISyntaxException;
 
-=======
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
->>>>>>> parent of bb12218... Fuision
 import java.util.Objects;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
