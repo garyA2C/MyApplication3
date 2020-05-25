@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.BlendMode;
 import android.graphics.BlendModeColorFilter;
 import android.graphics.Canvas;
@@ -92,7 +93,7 @@ public class drawingView {
     private ImageButton bUndo, bRedo;
     private SeekBar sRed, sGreen, sBlue, sThickness;
     private Switch sPremium;
-    private TextView tColor, tThickness, tZoom, tOverlay;
+    private TextView tColor, tThickness, tZoom, tOverlay, tPremiumPaint, tRegularPaint;
 
     /**Elements géographiques*/
     private MapView mMapView;
@@ -129,6 +130,7 @@ public class drawingView {
     private Socket mSocket;
 
     private Emitter.Listener onNewMessage;
+    private Emitter.Listener onPaintChange;
 
     public drawingView(MainActivity mainactivity, Context cont, Socket socket, IMyLocationConsumer consumer){
         MA=mainactivity;
@@ -146,7 +148,6 @@ public class drawingView {
         }
     };*/
         //requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
-
         mMapView = MA.findViewById(R.id.map);
         mMapView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -267,8 +268,32 @@ public class drawingView {
             }
         };
 
+        onPaintChange = new Emitter.Listener() {
+            @Override
+            public void call(final Object... args) {
+                MA.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONObject data = (JSONObject) args[0];
+                        try {
+                            double temp = data.getDouble("temporary_paint_stock");
+                            double perm = data.getDouble("permanant_paint_stock");
+                            tPremiumPaint.setText(String.valueOf(perm) + " L");
+                            tRegularPaint.setText(String.valueOf(temp) + " L");
+                            premiumVolume = perm;
+                            regularVolume = perm;
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
+            }
+        };
+
         mSocket.on("drawings_loaded", onNewMessage);
         mSocket.on("drawings_updated", onNewMessage);
+        mSocket.on("paint_loaded", onPaintChange);
         //Instanciation du service de localisation
 
         LinearLayout linear =MA.findViewById(R.id.layoutCanvas);
@@ -371,6 +396,8 @@ public class drawingView {
         tColor =MA.findViewById(R.id.textColor);
         tThickness =MA.findViewById(R.id.textThickness);
         tOverlay=MA.findViewById(R.id.textOverlay);
+        tPremiumPaint=MA.findViewById(R.id.textLitrePremium);
+        tRegularPaint=MA.findViewById(R.id.textLitreRegular);
         bPlus =MA.findViewById(R.id.buttonPlus);
         bPlus.setOnClickListener(new View.OnClickListener() {
             @Override

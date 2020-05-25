@@ -24,6 +24,7 @@ public class HttpUtils {
             httpURLConnection.setDoOutput(true);
             httpURLConnection.setRequestMethod("POST");
             httpURLConnection.setUseCaches(false);
+            httpURLConnection.setInstanceFollowRedirects(false);
 
             httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
@@ -33,13 +34,17 @@ public class HttpUtils {
             outputStream.write(data);
 
             int response = httpURLConnection.getResponseCode();
-            if (response == HttpURLConnection.HTTP_OK) {
-                InputStream inptStream = httpURLConnection.getInputStream();
-                return dealResponseResult(inptStream);
+
+            if (response == HttpURLConnection.HTTP_OK || response == 302) {
+                String cookie = httpURLConnection.getHeaderField("Set-Cookie");
+                httpURLConnection = (HttpURLConnection) new URL("https://paint.antoine-rcbs.ovh").openConnection();
+                httpURLConnection.setRequestProperty("Cookie", cookie);
+                httpURLConnection.connect();
+                return cookie;
             }
         } catch (IOException e) {
 
-            return "err: " + e.getMessage().toString();
+            return "-1";
         }
         return "-1";
     }

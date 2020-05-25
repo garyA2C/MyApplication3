@@ -7,6 +7,7 @@ import androidx.multidex.BuildConfig;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,7 +43,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.engineio.client.Transport;
 import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Manager;
 import com.github.nkzawa.socketio.client.Socket;
 
 
@@ -54,9 +58,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity implements IMyLocationConsumer {
@@ -100,7 +107,33 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
 
         //Instanciation du socket avec le serveur node.js
         try {
+            SharedPreferences settings = getSharedPreferences("SESSION", 0);
+            final String cookies = settings.getString("cookies", "-1");
             mSocket = IO.socket(SERVER_URL);
+            mSocket.io().on(Manager.EVENT_TRANSPORT, new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    Transport transport = (Transport)args[0];
+
+                    transport.on(Transport.EVENT_REQUEST_HEADERS, new Emitter.Listener() {
+                        @Override
+                        public void call(Object... args) {
+                            @SuppressWarnings("unchecked")
+                            Map<String, List<String>> headers = (Map<String, List<String>>)args[0];
+                            // modify request headers
+                            headers.put("Cookie", Arrays.asList(cookies));
+                        }
+                    });
+
+                    transport.on(Transport.EVENT_RESPONSE_HEADERS, new Emitter.Listener() {
+                        @Override
+                        public void call(Object... args) {
+                            @SuppressWarnings("unchecked")
+                            Map<String, List<String>> headers = (Map<String, List<String>>)args[0];
+                        }
+                    });
+                }
+            });
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -122,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements IMyLocationConsum
         DV = new drawingView(MA,context,mSocket,locationConsumer);
 //            }
 //        });
+
         mSocket.connect();
     }
     @Override

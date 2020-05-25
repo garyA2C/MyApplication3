@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
@@ -28,7 +29,8 @@ public class Inscription extends AppCompatActivity {
     private Button Inscription;
     File ext = Environment.getExternalStorageDirectory();
 
-    private static String baseURL = "https://paint.antoine-rcbs.ovh/inscription";
+    private static String baseURLRegister = "https://paint.antoine-rcbs.ovh/inscription";
+    private static String baseURLLogin = "https://paint.antoine-rcbs.ovh/login";
     public Inscription(){}
     private String email;
     private String password;
@@ -90,19 +92,20 @@ public class Inscription extends AppCompatActivity {
                     params.put("username", username);
                     params.put("password1", password);
                     params.put("password2", password);
-                    String strResult= HttpUtils.submitPostData(baseURL,params, "utf-8");
-                    File file = new File(ext, "TOKEN.txt");
-                    try {
-                        OutputStream out = new FileOutputStream(file);
-                        OutputStreamWriter osw = new OutputStreamWriter(out, StandardCharsets.UTF_8);
-                        BufferedWriter writer = new BufferedWriter(osw);
-                        writer.write(strResult);
-                        writer.flush();
-                        writer.close();
-                    }catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    String strResult2= HttpUtils.submitPostData(strResult,params, "utf-8");
+                    HttpUtils.submitPostData(baseURLRegister,params, "utf-8");
+                    //System.out.println("strResult = " + strResult);
+                        Map<String,String> params2 = new HashMap<String, String>();
+                        params2.put("username", username);
+                        params2.put("password", password);
+                        String strResult2 = HttpUtils.submitPostData(baseURLLogin,params2, "utf-8");
+                        if (!strResult2.equals("-1")) {
+                            SharedPreferences settings = getSharedPreferences("SESSION", 0);
+                            SharedPreferences.Editor editor = settings.edit();
+                            editor.putString("cookies", strResult2);
+                            editor.putString("username", username);
+                            editor.commit();
+                        }
+
 
                     Intent intent = new Intent();
                     intent.setClass(Inscription.this, MainActivity.class);
