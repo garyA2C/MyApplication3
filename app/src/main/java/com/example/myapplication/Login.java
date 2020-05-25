@@ -1,7 +1,6 @@
 package com.example.myapplication;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
@@ -62,7 +61,7 @@ public class Login extends AppCompatActivity {
                 String username = Username.getText().toString().trim();
                 String password = Password.getText().toString().trim();
                 Map<String, String> params =  new HashMap<String, String>();
-                /*
+
                 File file = new File(ext,"TOKEN.txt");
                 if(!file.exists()){
                     return;
@@ -75,26 +74,15 @@ public class Login extends AppCompatActivity {
                     params.put("token", token);
                 } catch (Exception e) {
                     e.printStackTrace();
-                }*/
-                params.put("username", username);
-                params.put("password", password);
-                String strResult= HttpUtils.submitPostData(baseURL,params, "utf-8");
-                //System.out.println("strResult = " + strResult);
-                if (!strResult.equals("-1")) {
-                    SharedPreferences settings = getSharedPreferences("SESSION", 0);
-                    SharedPreferences.Editor editor = settings.edit();
-                    editor.putString("cookies", strResult);
-                    editor.putString("username", username);
-                    editor.commit();
                 }
-
+                String strResult= HttpUtils.submitPostData(baseURL,params, "utf-8");
 
 
                 if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
                     Toast.makeText(Login.this, "Mot de passe ou email est vide", Toast.LENGTH_SHORT).show();
                     //return;
                 } else if (!Rembme.isChecked()) {
-                    //file = new File(ext, "user.txt");
+                    file = new File(ext, "user.txt");
                 }
 
                  if(!isPassword(Password.getText().toString())){
